@@ -19,6 +19,7 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Texture *background = NULL;
 SDL_Texture *ship = NULL;
+SDL_Texture *digits = NULL;
 
 void quit(int status, char *message)
 {
@@ -66,6 +67,36 @@ void init()
     IMG_Init(IMG_INIT_PNG);
 }
 
+void renderDigit(uint8_t digit, uint8_t x, uint8_t y)
+{
+    SDL_Rect src = {8 * digit, 0, 8, 8};
+    SDL_Rect dst = {x * ZOOM, y * ZOOM, 8 * ZOOM, 8 * ZOOM};
+    SDL_RenderCopy(renderer, digits, &src, &dst);
+}
+
+void renderScore(uint16_t score, uint8_t player)
+{
+    int x = player == 1 ? 16 : 160;
+    score = score % 10000;
+    for (uint8_t n = 4; n > 0; n -= 1)
+    {
+        uint8_t digit = score % 10;
+        renderDigit(digit, x + 8 * n, 25);
+        score = score / 10;
+    }
+}
+
+void renderShip(uint8_t x)
+{
+    SDL_Rect shipRect = {x * ZOOM, 216 * ZOOM, 13 * ZOOM, 8 * ZOOM};
+    SDL_RenderCopy(renderer, ship, NULL, &shipRect);
+}
+void renderShipsLeft(uint8_t left)
+{
+    // SDL_Rect shipRect = {x * ZOOM, 216 * ZOOM, 13 * ZOOM, 8 * ZOOM};
+    // SDL_RenderCopy(renderer, ship, NULL, &shipRect);
+}
+
 int main(int argc, char *argv[])
 {
     SDL_Event event;
@@ -76,17 +107,21 @@ int main(int argc, char *argv[])
     // Charger des images
     background = IMG_LoadTexture(renderer, "./background.png");
     ship = IMG_LoadTexture(renderer, "./ship.png");
+    digits = IMG_LoadTexture(renderer, "./digits.png");
     fprintf(stderr, "Error %s", IMG_GetError());
 
     // Faire des choses !
+    int player = 1;
+    int scores[2] = {850, 0};
     int shipX = (WIDTH - 13) / 2;
     int dx = 0;
     int stop = 0;
     while (!stop)
     {
-        SDL_Rect shipRect = {(shipX * ZOOM), 216 * ZOOM, 13 * ZOOM, 8 * ZOOM};
         SDL_RenderCopy(renderer, background, NULL, NULL);
-        SDL_RenderCopy(renderer, ship, NULL, &shipRect);
+        renderScore(scores[0], 1);
+        renderScore(scores[1], 2);
+        renderShip(shipX);
         SDL_RenderPresent(renderer);
         SDL_PollEvent(&event);
         switch (event.type)
