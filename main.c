@@ -74,27 +74,46 @@ void renderDigit(uint8_t digit, uint8_t x, uint8_t y)
     SDL_RenderCopy(renderer, digits, &src, &dst);
 }
 
+void renderNumber(uint16_t number, uint8_t width, uint8_t x, uint8_t y)
+{
+    for (uint8_t n = width; n > 0; n -= 1)
+    {
+        uint8_t digit = number % 10;
+        renderDigit(digit, x + 8 * n, y);
+        number = number / 10;
+    }
+}
+
 void renderScore(uint16_t score, uint8_t player)
 {
-    int x = player == 1 ? 16 : 160;
-    score = score % 10000;
-    for (uint8_t n = 4; n > 0; n -= 1)
-    {
-        uint8_t digit = score % 10;
-        renderDigit(digit, x + 8 * n, 25);
-        score = score / 10;
-    }
+    int x = player == 0 ? 80 : (player == 1 ? 16 : 160);
+    renderNumber(score % 10000, 4, x, 25);
 }
 
 void renderShip(uint8_t x)
 {
-    SDL_Rect shipRect = {x * ZOOM, 216 * ZOOM, 13 * ZOOM, 8 * ZOOM};
-    SDL_RenderCopy(renderer, ship, NULL, &shipRect);
+    SDL_Rect rect = {x * ZOOM, 216 * ZOOM, 13 * ZOOM, 8 * ZOOM};
+    SDL_RenderCopy(renderer, ship, NULL, &rect);
 }
-void renderShipsLeft(uint8_t left)
+
+void renderLives(uint8_t lives)
 {
-    // SDL_Rect shipRect = {x * ZOOM, 216 * ZOOM, 13 * ZOOM, 8 * ZOOM};
-    // SDL_RenderCopy(renderer, ship, NULL, &shipRect);
+    renderDigit(lives, 8, 241);
+    if (lives >= 2)
+    {
+        SDL_Rect shipRect = {64 * ZOOM, 241 * ZOOM, 13 * ZOOM, 8 * ZOOM};
+        SDL_RenderCopy(renderer, ship, NULL, &shipRect);
+    }
+    if (lives >= 1)
+    {
+        SDL_Rect shipRect = {24 * ZOOM, 241 * ZOOM, 13 * ZOOM, 8 * ZOOM};
+        SDL_RenderCopy(renderer, ship, NULL, &shipRect);
+    }
+}
+
+void renderCredits(uint8_t credits)
+{
+    renderNumber(credits, 2, 200, 241);
 }
 
 int main(int argc, char *argv[])
@@ -110,17 +129,24 @@ int main(int argc, char *argv[])
     digits = IMG_LoadTexture(renderer, "./digits.png");
     fprintf(stderr, "Error %s", IMG_GetError());
 
+    // Initialiser plein de variables
+    uint8_t player = 1;
+    uint16_t scores[3] = {9999, 850, 0}; // HI, P1, P2
+    uint8_t lives = 3;
+    uint8_t credits = 9;
+
     // Faire des choses !
-    int player = 1;
-    int scores[2] = {850, 0};
     int shipX = (WIDTH - 13) / 2;
     int dx = 0;
     int stop = 0;
     while (!stop)
     {
         SDL_RenderCopy(renderer, background, NULL, NULL);
-        renderScore(scores[0], 1);
-        renderScore(scores[1], 2);
+        for (uint8_t i = 0; i < 3; i++)
+        {
+            renderScore(scores[i], i);
+        }
+        renderLives(lives);
         renderShip(shipX);
         SDL_RenderPresent(renderer);
         SDL_PollEvent(&event);
