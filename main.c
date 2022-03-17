@@ -11,13 +11,14 @@
 #include <SDL2/SDL.h>
 #include <SDL_image.h>
 
-#define WIDTH 224
-#define HEIGHT 256
+#define GAME_WIDTH 224
+#define GAME_HEIGHT 256
 #define ZOOM 3
 
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
-SDL_Texture *background = NULL;
+SDL_Texture *backgrounds[3] = {NULL, NULL, NULL};
+uint8_t background = 0;
 SDL_Texture *ship = NULL;
 SDL_Texture *chars = NULL;
 
@@ -48,12 +49,12 @@ void init()
         quit(EXIT_FAILURE, "SDL_Init");
     }
     // Notre fenêtre pour jouer
-    sprintf(title, "Space Invaders 1978 %dx%dx%d", WIDTH, HEIGHT, ZOOM);
+    sprintf(title, "Space Invaders 1978 (%dx%dx%d)", GAME_WIDTH, GAME_HEIGHT, ZOOM);
     window = SDL_CreateWindow(
         title,
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        WIDTH * ZOOM, HEIGHT * ZOOM,
+        GAME_WIDTH * ZOOM * 2, GAME_HEIGHT * ZOOM,
         SDL_WINDOW_SHOWN);
     if (NULL == window)
     {
@@ -104,29 +105,28 @@ void renderScore(uint16_t score, uint8_t player)
 void renderShip(uint8_t x)
 {
     SDL_Rect rect = {x * ZOOM, 216 * ZOOM, 13 * ZOOM, 8 * ZOOM};
-    SDL_SetRenderDrawColor(renderer, 0xa0, 0x80, 0x40, 0x80);
-    SDL_RenderFillRect(renderer,&rect);
-    // SDL_RenderCopy(renderer, ship, NULL, &rect);
+    SDL_RenderFillRect(renderer, &rect);
+    SDL_RenderCopy(renderer, ship, NULL, &rect);
 }
 
 void renderLives(uint8_t lives)
 {
-    renderChar(lives, 8, 241);
+    renderChar('0' + lives, 1, 240);
     if (lives >= 2)
     {
-        SDL_Rect shipRect = {64 * ZOOM, 241 * ZOOM, 13 * ZOOM, 8 * ZOOM};
+        SDL_Rect shipRect = {41 * ZOOM, 240 * ZOOM, 13 * ZOOM, 8 * ZOOM};
         SDL_RenderCopy(renderer, ship, NULL, &shipRect);
     }
     if (lives >= 1)
     {
-        SDL_Rect shipRect = {24 * ZOOM, 241 * ZOOM, 13 * ZOOM, 8 * ZOOM};
+        SDL_Rect shipRect = {25 * ZOOM, 240 * ZOOM, 13 * ZOOM, 8 * ZOOM};
         SDL_RenderCopy(renderer, ship, NULL, &shipRect);
     }
 }
 
 void renderCredits(uint8_t credits)
 {
-    renderNumber(credits, 2, 24, 241);
+    renderNumber(credits, 2, 24, 240);
 }
 
 int main(int argc, char *argv[])
@@ -137,7 +137,9 @@ int main(int argc, char *argv[])
     init();
 
     // Charger des images
-    background = IMG_LoadTexture(renderer, "./intro1.png");
+    backgrounds[0] = IMG_LoadTexture(renderer, "./intro1.png");
+    backgrounds[1] = IMG_LoadTexture(renderer, "./player-1.png");
+    backgrounds[2] = IMG_LoadTexture(renderer, "./game-1.png");
     ship = IMG_LoadTexture(renderer, "./ship.png");
     chars = IMG_LoadTexture(renderer, "./letters.png");
     fprintf(stderr, "Error %s", IMG_GetError());
@@ -149,15 +151,34 @@ int main(int argc, char *argv[])
     uint8_t credits = 9;
 
     // Faire des choses !
-    int shipX = (WIDTH - 13) / 2;
+    int shipX = (GAME_WIDTH - 13) / 2;
     int dx = 0;
     int stop = 0;
     while (!stop)
     {
-        // SDL_RenderCopy(renderer, background, NULL, NULL);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+        SDL_RenderClear(renderer);
+        SDL_Rect backgroundRect = {GAME_WIDTH * ZOOM, 0, GAME_WIDTH * ZOOM, GAME_HEIGHT * ZOOM};
+        SDL_RenderCopy(renderer, backgrounds[background], NULL, &backgroundRect);
         renderText("SCORE<1> HI-SCORE SCORE<2>", 1, 0);
         renderText("0123456789012345678901234567", 0, 24);
-        renderText("CREDIT", 17, 241);
+        renderText("CREDIT", 17, 240);
+        for (uint16_t x = 0; x < GAME_WIDTH * 2; x += 8)
+        {
+            if (x < GAME_WIDTH * 2)
+            {
+                SDL_SetRenderDrawColor(renderer, 0xc0, 0xc0, 0xc0, 0xff);
+            }
+            else
+            {
+                SDL_SetRenderDrawColor(renderer, 0x80, 0x80, 0x80, 0xff);
+            }
+            for (uint16_t y = 0; y < GAME_HEIGHT * 2; y += 8)
+            {
+                SDL_Rect gridRect = {x * ZOOM, y * ZOOM, (x + 8) * ZOOM, (y + 8) * ZOOM};
+                SDL_RenderDrawRect(renderer, &gridRect);
+            }
+        }
         for (uint8_t i = 0; i < 3; i++)
         {
             renderScore(scores[i], i);
@@ -187,6 +208,9 @@ int main(int argc, char *argv[])
             case SDLK_RIGHT:
                 dx = 1;
                 break;
+            case SDLK_KP_PLUS:
+                background = (background + 1) % 3;
+                break;
             default:
                 break;
             }
@@ -209,7 +233,7 @@ int main(int argc, char *argv[])
         default:
             break;
         }
-        if (dx != 0 && shipX + dx >= 0 && shipX + 13 + dx <= WIDTH)
+        if (dx != 0 && shipX + dx >= 0 && shipX + 13 + dx <= GAME_WIDTH)
         {
             shipX += dx;
         }
