@@ -12,7 +12,7 @@
 #include <SDL_image.h>
 
 // #define WITH_SCREENSHOTS SDL_TRUE
-#define ZOOM 1
+#define ZOOM 3
 
 #define GAME_WIDTH 224
 #define GAME_HEIGHT 256
@@ -47,7 +47,8 @@ SDL_Texture *aliens = NULL;
 SDL_Texture *saucer = NULL;
 
 // Game state
-int32_t speed = 10;
+int32_t speed = 7;
+int32_t delay;
 uint8_t scene = SCENE_NONE;
 uint32_t startTicks = 0L;
 uint32_t step = 0L;
@@ -65,7 +66,8 @@ uint8_t aliensX = 0;
 uint8_t aliensY = 0;
 uint8_t saucerX = 0;
 
-SDL_bool flagBottomLine = SDL_FALSE;
+SDL_bool flagLine = SDL_FALSE;
+SDL_bool flagLives = SDL_FALSE;
 SDL_bool flagShip = SDL_FALSE;
 SDL_bool flagFire = SDL_FALSE;
 SDL_bool flagAliens = SDL_FALSE;
@@ -109,7 +111,7 @@ void init()
     {
         quit(EXIT_FAILURE, "SDL_CreateWindow");
     }
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); // | SDL_RENDERER_PRESENTVSYNC);
     if (NULL == renderer)
     {
         quit(EXIT_FAILURE, "SDL_CreateRenderer");
@@ -121,12 +123,12 @@ void init()
  * @brief Render one char at text column and pixel line
  *
  * @param c      char to render
- * @param column 0..GAME_WIDTH/8-1
+ * @param column 0..2*!GAME_WIDTH/8-1
  * @param y      0..GAME_HEIGHT-1
  */
 void renderChar(char c, uint8_t column, uint16_t y)
 {
-    if (c < 0 || c > 127 || column > GAME_WIDTH / 8 - 1 || y > (GAME_HEIGHT + 16 - 1))
+    if (c < 0 || c > 127 || column > 2 * GAME_WIDTH / 8 - 1 || y > (GAME_HEIGHT + 16 - 1))
     {
         fprintf(stderr, "renderChar: %c %d %d : char or position out of range!\r\n", c, column, y);
         return;
@@ -156,10 +158,16 @@ void renderText(char *text, uint8_t column, uint8_t y)
     }
 }
 
+/**
+ * @brief Render debug line under game & screenshot
+ *
+ * @param sceneName BOOT/HOME/PLAY/GAME/...
+ * @param duration  since last scene change
+ */
 void renderDebugText(char *sceneName, uint32_t duration)
 {
     char flags[] = "_____";
-    if (flagBottomLine)
+    if (flagLine)
         flags[0] = 'L';
     if (flagShip)
         flags[1] = 'S';
@@ -170,7 +178,9 @@ void renderDebugText(char *sceneName, uint32_t duration)
     if (flagSaucer)
         flags[4] = 'X';
     char buffer[256];
-    sprintf(buffer, "%s %08.03f %s %02d", sceneName, duration / 1000.0, flags, speed);
+    sprintf(buffer,
+            "%s %08.1f %s SHIP:%03d FIRE:%03d SPD/DLY:%02d/%02d",
+            sceneName, duration / 1000.0, flags, shipX, fireY, speed, delay);
     uint8_t i = 0;
     while (buffer[i])
     {
@@ -196,31 +206,40 @@ void renderNumber(uint16_t number, uint8_t width, uint8_t column, uint8_t y)
 
 /**
  * @brief Render high score player's one, two
- *
- * @param score  Score to display
- * @param player 0=high, 1=player 1, 2=player 2
  */
-void renderScores(uint16_t *scores)
+void renderScores()
 {
-    for (uint8_t player = 0; player < 3; player += 1)
+    for (uint8_t i = 0; i < 3; i += 1)
     {
         // HI, P1, P2
-        int column = player == 0 ? 11 : (player == 1 ? 3 : 21);
-        renderNumber(scores[player] % 10000, 4, column, 3 * 8);
+        // Don't display P2 when P1 is playing & vice-versa
+        if (scene != SCENE_GAME || (scene == SCENE_GAME && player == i))
+        {
+            //           1         2
+            // 012345678901234567890123456789
+            //  SCORE<1> HI-SCORE SCORE<2>
+            //    0000    0000      0000   <- original
+            //    0000     0000     0000   <- my version
+            int column = i == 0 ? 12 : (i == 1 ? 3 : 21);
+            renderNumber(scores[i] % 10000, 4, column, 3 * 8);
+        }
     }
 }
 
 /**
- * @brief Render left lives
+ * @brief Render lives
  *
  * @param lives 1..3
  */
 void renderLives(uint8_t lives)
 {
+    if (!flagLives)
+        return;
     renderChar('0' + lives, 1, 30 * 8);
     for (uint8_t i = 0; i < lives - 1; i += 1)
     {
-        SDL_Rect shipRect = {(26 + i * 16) * ZOOM, 240 * ZOOM, SHIP_WIDTH * ZOOM, SHIP_HEIGHT * ZOOM};
+        SDL_Rect shipRect = {(26 + i * 16) * ZOOM, 30 * 8 * ZOOM,
+                             SHIP_WIDTH * ZOOM, SHIP_HEIGHT * ZOOM};
         SDL_RenderCopy(renderer, ship, NULL, &shipRect);
     }
 }
@@ -228,7 +247,7 @@ void renderLives(uint8_t lives)
 /**
  * @brief Render credits
  *
- * @param credits
+ * @param credits 0..99
  */
 void renderCredits()
 {
@@ -245,6 +264,7 @@ void renderShip()
     if (!flagShip)
         return;
     SDL_Rect rect = {shipX * ZOOM, 216 * ZOOM, SHIP_WIDTH * ZOOM, SHIP_HEIGHT * ZOOM};
+    // fprintf(stderr, "SHIP: %d %d %d %d\n", rect.x, rect.y, rect.w, rect.h);
     // SDL_RenderFillRect(renderer, &rect);
     SDL_RenderCopy(renderer, ship, NULL, &rect);
 }
@@ -259,7 +279,9 @@ void renderFire()
 {
     if (!flagFire)
         return;
+    SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, SDL_ALPHA_OPAQUE);
     SDL_Rect rect = {fireX * ZOOM, fireY * ZOOM, 1 * ZOOM, 2 * ZOOM};
+    // fprintf(stderr, "FIRE: %d %d %d %d\n", rect.x, rect.y, rect.w, rect.h);
     SDL_RenderFillRect(renderer, &rect);
 }
 
@@ -275,11 +297,11 @@ void renderGrid()
             // if (gx || gy)
             if (x >= GAME_WIDTH)
             {
-                SDL_SetRenderDrawColor(renderer, 0xc0, 0xc0, 0xc0, 0);
+                SDL_SetRenderDrawColor(renderer, 0xc0, 0xc0, 0xc0, SDL_ALPHA_TRANSPARENT);
             }
             else
             {
-                SDL_SetRenderDrawColor(renderer, 0x80, 0x80, 0x80, 0);
+                SDL_SetRenderDrawColor(renderer, 0x80, 0x80, 0x80, SDL_ALPHA_TRANSPARENT);
             }
             SDL_Rect gridRect = {x * ZOOM, y * ZOOM, (x + 8) * ZOOM, (y + 8) * ZOOM};
             SDL_RenderDrawRect(renderer, &gridRect);
@@ -293,17 +315,22 @@ void renderGrid()
 
 void renderBottomLine()
 {
-    if (flagBottomLine)
-    {
-        SDL_Rect lineRect = {0 * ZOOM, 239 * ZOOM, GAME_WIDTH * ZOOM, 1 * ZOOM};
-        SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
-        SDL_RenderFillRect(renderer, &lineRect);
-    }
+    if (!flagLine)
+        return;
+    SDL_Rect lineRect = {0 * ZOOM, 239 * ZOOM, GAME_WIDTH * ZOOM, 1 * ZOOM};
+    SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, SDL_ALPHA_OPAQUE);
+    SDL_RenderFillRect(renderer, &lineRect);
 }
 
+/**
+ * @brief Set the scene
+ *
+ * @param newScene SCENE_XXXX
+ */
 void setScene(uint8_t newScene)
 {
-    flagBottomLine = SDL_FALSE;
+    flagLine = SDL_FALSE;
+    flagLives = SDL_FALSE;
     flagShip = SDL_FALSE;
     flagFire = SDL_FALSE;
     flagAliens = SDL_FALSE;
@@ -334,7 +361,8 @@ void setScene(uint8_t newScene)
         startTicks = SDL_GetTicks();
         shipX = (GAME_WIDTH - SHIP_WIDTH) / 2;
         shipDx = 0;
-        flagBottomLine = SDL_TRUE;
+        flagLine = SDL_TRUE;
+        flagLives = SDL_TRUE;
         flagShip = SDL_TRUE;
         flagAliens = SDL_TRUE;
         break;
@@ -346,22 +374,22 @@ void setScene(uint8_t newScene)
 
 void renderScene()
 {
+    static uint32_t lastDuration = 0;
     uint32_t ticks = SDL_GetTicks();
     uint32_t duration = ticks - startTicks;
 
     // Clear screen to black
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_SetRenderDrawColor(renderer, 0x40, 0x40, 0x40, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
-    // Render "always here" items
-    // , except in BOOT scene
-    // if (scene != SCENE_BOOT)
-    // {
-    renderText("SCORE<1> HI-SCORE SCORE<2>", 2, 8);
-    renderScores(scores);
-    renderText("CREDIT", 17, 240);
-    renderLives(lives);
-    renderCredits(credits);
-    // }
+    // Render "always here" items, except in BOOT scene
+    if (scene != SCENE_BOOT)
+    {
+        renderText("SCORE<1> HI-SCORE SCORE<2>", 1, 1 * 8);
+        renderScores(scores);
+        renderLives(lives);
+        renderText("CREDIT", 17, 30 * 8);
+        renderCredits(credits);
+    }
 
     switch (scene)
     {
@@ -388,7 +416,7 @@ void renderScene()
         break;
     case SCENE_PLAY:
         renderDebugText("PLAY", duration);
-        if (duration > 5000)
+        if (duration > 1000)
         {
             setScene(SCENE_GAME);
         }
@@ -401,10 +429,27 @@ void renderScene()
         break;
     case SCENE_GAME:
         renderDebugText("GAME", duration);
+        // Check if ship can/has to move
+        if (shipDx != 0 && shipX + shipDx >= 8 && shipX + SHIP_WIDTH + shipDx <= GAME_WIDTH - 8)
+        {
+            shipX += shipDx;
+        }
         // Check if ship touched by bomb
+        // Check if fire can go up
+        if (flagFire)
+        {
+            fireY -= 1;
+            if (fireY < 32)
+            {
+                flagFire = 0;
+            }
+        }
         // Check if alien touched by fire
+        if (flagFire)
+        {
+            // TODO
+        }
         // ...
-        renderDebugText("BOOT", duration);
         break;
     default:
         renderDebugText("????", duration);
@@ -431,7 +476,7 @@ int main(int argc, char *argv[])
 {
     SDL_Event event;
 
-    fprintf(stderr,"char: %ld\n",sizeof(char));
+    fprintf(stderr, "char: %ld\n", sizeof(char));
 
     init();
 
@@ -449,7 +494,6 @@ int main(int argc, char *argv[])
     SDL_bool grid = SDL_FALSE;
 
     setScene(SCENE_BOOT);
-
 
     SDL_bool stop = SDL_FALSE;
     while (!stop)
@@ -487,10 +531,17 @@ int main(int argc, char *argv[])
                 break;
             case SDLK_SPACE:
                 if (flagShip && !flagFire)
+                {
                     flagFire = SDL_TRUE;
+                    fireX = shipX + 6;
+                    fireY = 216 - 3;
+                }
             case SDLK_1:
-                if (scene == SCENE_HOME)
+                if (scene == SCENE_HOME && credits > 0)
+                {
                     setScene(SCENE_PLAY);
+                    credits -= 1;
+                }
                 break;
             case SDLK_r:
                 setScene(SCENE_BOOT);
@@ -537,13 +588,9 @@ int main(int argc, char *argv[])
         default:
             break;
         }
-        if (flagShip && shipDx != 0 && shipX + shipDx >= 0 && shipX + SHIP_WIDTH + shipDx <= GAME_WIDTH)
-        {
-            shipX += shipDx;
-        }
         uint32_t endTicks = SDL_GetTicks();
         int32_t renderTicks = endTicks - beginTicks;
-        int32_t delay = speed - renderTicks;
+        delay = speed - renderTicks;
         if (delay < 0)
             delay = 0;
         if (delay > 100)
