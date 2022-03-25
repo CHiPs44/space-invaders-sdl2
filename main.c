@@ -20,7 +20,7 @@ SDL_Renderer *renderer = NULL;
 SDL_Texture *backgrounds[3] = {NULL, NULL, NULL};
 uint8_t background = 0;
 SDL_Texture *ship = NULL;
-SDL_Texture *chars = NULL;
+SDL_Texture *ascii = NULL;
 
 void quit(int status, char *message)
 {
@@ -54,7 +54,7 @@ void init()
         title,
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        GAME_WIDTH * ZOOM * 2, GAME_HEIGHT * ZOOM,
+        GAME_WIDTH * ZOOM * 2, (GAME_HEIGHT + 8) * ZOOM,
         SDL_WINDOW_SHOWN);
     if (NULL == window)
     {
@@ -87,7 +87,7 @@ void renderChar(char c, uint8_t column, uint8_t y)
     SDL_Rect src = {offset_x, offset_y, 8, 8};
     SDL_Rect dst = {column * 8 * ZOOM, y * ZOOM, 8 * ZOOM, 8 * ZOOM};
     // SDL_RenderFillRect(renderer, &dst);
-    SDL_RenderCopy(renderer, chars, &src, &dst);
+    SDL_RenderCopy(renderer, ascii, &src, &dst);
 }
 
 /**
@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
     backgrounds[1] = IMG_LoadTexture(renderer, "./player-1.png");
     backgrounds[2] = IMG_LoadTexture(renderer, "./game-1.png");
     ship = IMG_LoadTexture(renderer, "./ship.png");
-    chars = IMG_LoadTexture(renderer, "./letters.png");
+    ascii = IMG_LoadTexture(renderer, "./ascii.png");
     fprintf(stderr, "Error %s", IMG_GetError());
 
     uint8_t player = 1;
@@ -224,12 +224,15 @@ int main(int argc, char *argv[])
     int grid = 0;
     while (!stop)
     {
+        // Clear screen to black
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
         SDL_RenderClear(renderer);
+        // Draw "background" screenshot
         SDL_Rect backgroundRect = {GAME_WIDTH * ZOOM, 0, GAME_WIDTH * ZOOM, GAME_HEIGHT * ZOOM};
         SDL_RenderCopy(renderer, backgrounds[background], NULL, &backgroundRect);
+        // Render fixed items
         renderText("SCORE<1> HI-SCORE SCORE<2>", 2, 8);
-        renderText("0123456789012345678901234567", 0, 40);
+        // renderText("0123456789012345678901234567", 0, 40);
         renderText("CREDIT", 17, 240);
         for (uint8_t i = 0; i < 3; i++)
         {
