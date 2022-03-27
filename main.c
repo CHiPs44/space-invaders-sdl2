@@ -11,6 +11,8 @@
 #include <SDL2/SDL.h>
 #include <SDL_image.h>
 
+#include "sprite.c"
+
 // #define WITH_SCREENSHOTS SDL_TRUE
 #define ZOOM 3
 
@@ -19,11 +21,12 @@
 
 #define SHIP_WIDTH 13
 #define SHIP_HEIGHT 8
+#define SHIP_Y 216
 
-#define ALIEN_WIDTH 8
+#define ALIEN_WIDTH 16
 #define ALIEN_HEIGHT 8
 #define ALIEN_LINES 5
-#define ALIEN_COLS 11
+#define ALIEN_COLUMNS 11
 #define ALIEN_START_X (8 * 8)
 #define ALIEN_START_Y (10 * 8)
 
@@ -40,9 +43,10 @@
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 
-// Images
+// Sprites
 SDL_Texture *font = NULL;
-SDL_Texture *ship = NULL;
+Sprite *ship = NULL;
+Sprite *fire = NULL;
 SDL_Texture *aliens = NULL;
 SDL_Texture *saucer = NULL;
 
@@ -57,14 +61,12 @@ uint8_t player = 1;
 uint16_t scores[3] = {6789, 1010, 2020}; // HI, P1, P2
 uint8_t lives = 3;
 uint8_t credits = 9;
-int shipX = (GAME_WIDTH - SHIP_WIDTH) / 2;
 int shipDx = 0;
-uint8_t fireX = 0;
-uint8_t fireY = 0;
-uint8_t alienMap[ALIEN_LINES][ALIEN_COLS];
+uint8_t alienMap[ALIEN_LINES][ALIEN_COLUMNS];
 uint8_t aliensX = 0;
 uint8_t aliensY = 0;
-uint8_t saucerX = 0;
+int16_t saucerX = 0;
+int saucerExplode = 0;
 
 SDL_bool flagLine = SDL_FALSE;
 SDL_bool flagLives = SDL_FALSE;
@@ -166,7 +168,7 @@ void renderText(char *text, uint8_t column, uint8_t y)
  */
 void renderDebugText(char *sceneName, uint32_t duration)
 {
-    char flags[] = "_____";
+    char flags[] = "lsfax";
     if (flagLine)
         flags[0] = 'L';
     if (flagShip)
@@ -180,7 +182,7 @@ void renderDebugText(char *sceneName, uint32_t duration)
     char buffer[256];
     sprintf(buffer,
             "%s %08.1f %s SHIP:%03d FIRE:%03d SPD/DLY:%02d/%02d",
-            sceneName, duration / 1000.0, flags, shipX, fireY, speed, delay);
+            sceneName, duration / 1000.0, flags, ship->rect.x, fire->rect.y, speed, delay);
     uint8_t i = 0;
     while (buffer[i])
     {
@@ -238,9 +240,9 @@ void renderLives(uint8_t lives)
     renderChar('0' + lives, 1, 30 * 8);
     for (uint8_t i = 0; i < lives - 1; i += 1)
     {
-        SDL_Rect shipRect = {(26 + i * 16) * ZOOM, 30 * 8 * ZOOM,
-                             SHIP_WIDTH * ZOOM, SHIP_HEIGHT * ZOOM};
-        SDL_RenderCopy(renderer, ship, NULL, &shipRect);
+        SDL_Rect rect = {(26 + i * 16) * ZOOM, 30 * 8 * ZOOM,
+                         SHIP_WIDTH * ZOOM, SHIP_HEIGHT * ZOOM};
+        SDL_RenderCopy(renderer, ship->texture, NULL, &rect);
     }
 }
 
@@ -256,17 +258,14 @@ void renderCredits()
 
 /**
  * @brief Render ship
- *
- * @param x Left position
  */
 void renderShip()
 {
     if (!flagShip)
         return;
-    SDL_Rect rect = {shipX * ZOOM, 216 * ZOOM, SHIP_WIDTH * ZOOM, SHIP_HEIGHT * ZOOM};
-    // fprintf(stderr, "SHIP: %d %d %d %d\n", rect.x, rect.y, rect.w, rect.h);
-    // SDL_RenderFillRect(renderer, &rect);
-    SDL_RenderCopy(renderer, ship, NULL, &rect);
+    // SDL_Rect rect = {rect.ship->x * ZOOM, SHIP_Y * ZOOM, SHIP_WIDTH * ZOOM, SHIP_HEIGHT * ZOOM};
+    // SDL_RenderCopy(renderer, ship, NULL, &rect);
+    renderSprite(ship, renderer, ZOOM);
 }
 
 /**
@@ -279,38 +278,42 @@ void renderFire()
 {
     if (!flagFire)
         return;
-    SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, SDL_ALPHA_OPAQUE);
-    SDL_Rect rect = {fireX * ZOOM, fireY * ZOOM, 1 * ZOOM, 2 * ZOOM};
-    // fprintf(stderr, "FIRE: %d %d %d %d\n", rect.x, rect.y, rect.w, rect.h);
-    SDL_RenderFillRect(renderer, &rect);
+    renderSprite(fire, renderer, ZOOM);
+}
+
+void renderSaucer()
+{
+    if (!flagSaucer)
+        return;
+    SDL_Rect source =
+        {0, (saucerExplode > 0) ? SAUCER_HEIGHT : 0,
+         SAUCER_WIDTH, SAUCER_HEIGHT};
+    SDL_Rect destination =
+        {saucerX * ZOOM, 40 * ZOOM,
+         SAUCER_WIDTH * ZOOM, SAUCER_HEIGHT * ZOOM};
+    SDL_RenderCopy(renderer, saucer, &source, &destination);
 }
 
 void renderGrid()
 {
-    // SDL_bool gx = SDL_TRUE;
-    // SDL_bool gy = SDL_FALSE;
-    // SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     for (uint16_t x = 0; x < GAME_WIDTH * 2; x += 8)
     {
         for (uint16_t y = 0; y < GAME_HEIGHT * 2; y += 8)
         {
-            // if (gx || gy)
-            if (x >= GAME_WIDTH)
+            if (x > GAME_WIDTH)
             {
-                SDL_SetRenderDrawColor(renderer, 0xc0, 0xc0, 0xc0, SDL_ALPHA_TRANSPARENT);
+                SDL_SetRenderDrawColor(renderer, 0xc0, 0xc0, 0xc0, SDL_ALPHA_OPAQUE);
             }
             else
             {
-                SDL_SetRenderDrawColor(renderer, 0x80, 0x80, 0x80, SDL_ALPHA_TRANSPARENT);
+                SDL_SetRenderDrawColor(renderer, 0x80, 0x80, 0x80, SDL_ALPHA_OPAQUE);
             }
-            SDL_Rect gridRect = {x * ZOOM, y * ZOOM, (x + 8) * ZOOM, (y + 8) * ZOOM};
-            SDL_RenderDrawRect(renderer, &gridRect);
-            // SDL_RenderFillRect(renderer, &gridRect);
-            // gy = !gy;
+            SDL_Rect rect = {
+                x * ZOOM, y * ZOOM,
+                (x + 8) * ZOOM, (y + 8) * ZOOM};
+            SDL_RenderDrawRect(renderer, &rect);
         }
-        // gx = !gx;
     }
-    // SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 }
 
 void renderBottomLine()
@@ -359,7 +362,7 @@ void setScene(uint8_t newScene)
         // efectively play game
         scene = newScene;
         startTicks = SDL_GetTicks();
-        shipX = (GAME_WIDTH - SHIP_WIDTH) / 2;
+        ship->rect.x = (GAME_WIDTH - SHIP_WIDTH) / 2;
         shipDx = 0;
         flagLine = SDL_TRUE;
         flagLives = SDL_TRUE;
@@ -405,8 +408,11 @@ void renderScene()
             {
                 for (uint8_t col = 0; col < GAME_WIDTH / 8; col++)
                 {
-                    char c = rand() % 128;
-                    renderChar(c, col, line * 8);
+                    int c = rand() % (48 + 2 * duration);
+                    if (c <= 255)
+                    {
+                        renderChar(c > 127 ? 127 : c, col, line * 8);
+                    }
                 }
             }
         }
@@ -429,20 +435,44 @@ void renderScene()
         break;
     case SCENE_GAME:
         renderDebugText("GAME", duration);
-        // Check if ship can/has to move
-        if (shipDx != 0 && shipX + shipDx >= 8 && shipX + SHIP_WIDTH + shipDx <= GAME_WIDTH - 8)
+        // TEST : activate saucer after 2 seconds
+        if (duration > 2000 && duration < 2100 && !flagSaucer)
         {
-            shipX += shipDx;
+            flagSaucer = SDL_TRUE;
+            saucerX = GAME_WIDTH;
         }
-        // Check if ship touched by bomb
+        if (flagSaucer)
+        {
+            saucerX -= 1;
+            if (saucerX <= -16)
+            {
+                flagSaucer = SDL_FALSE;
+            }
+        }
+        // Check if ship can/has to move
+        if (shipDx != 0 && ship->rect.x + shipDx >= 8 && ship->rect.x + SHIP_WIDTH + shipDx <= GAME_WIDTH - 8)
+        {
+            ship->rect.x += shipDx;
+        }
+        // Check if ship touched by bombs
+        // if (flagBomb)
+        // {
+        //     // TODO
+        // }
         // Check if fire can go up
         if (flagFire)
         {
-            fireY -= 1;
-            if (fireY < 32)
+            fire->rect.y -= 1;
+            if (fire->rect.y < 32)
             {
-                flagFire = 0;
+                // TODO explode player fire
+                flagFire = SDL_FALSE;
             }
+        }
+        // Check if saucer touched by fire
+        if (flagSaucer && fire->rect.y <= 40 && (fire->rect.x >= saucerX || fire->rect.x <= saucerX + 16))
+        {
+            saucerExplode = SDL_GetTicks() + 250;
         }
         // Check if alien touched by fire
         if (flagFire)
@@ -459,10 +489,10 @@ void renderScene()
     // Render conditional elements
     renderShip();
     renderFire();
-    renderBottomLine();
     // renderAliens();
-    // renderSaucer();
+    renderSaucer();
     // renderBuildings();
+    renderBottomLine();
 }
 
 /**
@@ -476,17 +506,19 @@ int main(int argc, char *argv[])
 {
     SDL_Event event;
 
-    fprintf(stderr, "char: %ld\n", sizeof(char));
+    // fprintf(stderr, "char: %ld\n", sizeof(char));
 
     init();
 
     // Load images
     font = IMG_LoadTexture(renderer, "./font.png");
-    ship = IMG_LoadTexture(renderer, "./ship.png");
+    ship = createSprite(renderer, "./ship.png", 1);
+    ship->rect.y = SHIP_Y;
+    fire = createSprite(renderer, "./fire.png", 1);
 
     // Screenshots
     SDL_Texture *screenshots[3];
-    uint8_t screenshot = 0;
+    uint8_t screenshot = 2;
     screenshots[0] = IMG_LoadTexture(renderer, "./intro1.png");
     screenshots[1] = IMG_LoadTexture(renderer, "./player-1.png");
     screenshots[2] = IMG_LoadTexture(renderer, "./game-1.png");
@@ -498,17 +530,18 @@ int main(int argc, char *argv[])
     SDL_bool stop = SDL_FALSE;
     while (!stop)
     {
-        uint32_t beginTicks = SDL_GetTicks();
+        uint32_t frameBegin = SDL_GetTicks();
+        // Draw current scene
         renderScene();
         // Draw screenshot
         SDL_Rect screenshotRect = {GAME_WIDTH * ZOOM, 0, GAME_WIDTH * ZOOM, GAME_HEIGHT * ZOOM};
         SDL_RenderCopy(renderer, screenshots[screenshot], NULL, &screenshotRect);
         // Helps debugging item positions
         if (grid)
-        {
             renderGrid();
-        }
+        // Render complete screen
         SDL_RenderPresent(renderer);
+        // Manage events
         SDL_PollEvent(&event);
         switch (event.type)
         {
@@ -533,8 +566,8 @@ int main(int argc, char *argv[])
                 if (flagShip && !flagFire)
                 {
                     flagFire = SDL_TRUE;
-                    fireX = shipX + 6;
-                    fireY = 216 - 3;
+                    fire->rect.x = ship->rect.x + ship->rect.w / 2;
+                    fire->rect.y = ship->rect.y - fire->rect.w;
                 }
             case SDLK_1:
                 if (scene == SCENE_HOME && credits > 0)
@@ -588,14 +621,16 @@ int main(int argc, char *argv[])
         default:
             break;
         }
-        uint32_t endTicks = SDL_GetTicks();
-        int32_t renderTicks = endTicks - beginTicks;
+        uint32_t renderEnd = SDL_GetTicks();
+        int32_t renderTicks = renderEnd - frameBegin;
         delay = speed - renderTicks;
         if (delay < 0)
             delay = 0;
         if (delay > 100)
             delay = 100;
         SDL_Delay(delay);
+        uint32_t frameEnd = SDL_GetTicks();
+        uint32_t frameDuration = frameEnd - frameBegin;
     }
 
     // Fin des haricots
