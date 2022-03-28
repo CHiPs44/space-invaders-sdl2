@@ -34,6 +34,10 @@
 #define SAUCER_HEIGHT 8
 #define SAUCER_Y 40
 
+#define SHIELD_WIDTH 24
+#define SHIELD_HEIGHT 16
+#define SHIELD_Y 192
+
 #define SCENE_NONE 0
 #define SCENE_BOOT 1
 #define SCENE_HOME 2
@@ -50,6 +54,7 @@ Sprite *ship = NULL;
 Sprite *fire = NULL;
 SDL_Texture *aliens = NULL;
 Sprite *saucer = NULL;
+Sprite *shields[4] = {NULL, NULL, NULL, NULL};
 
 // Game state
 int32_t speed = 7;
@@ -74,6 +79,7 @@ SDL_bool flagShip = SDL_FALSE;
 SDL_bool flagFire = SDL_FALSE;
 SDL_bool flagAliens = SDL_FALSE;
 SDL_bool flagSaucer = SDL_FALSE;
+SDL_bool flagShields = SDL_FALSE;
 
 void quit(int status, char *message)
 {
@@ -187,8 +193,10 @@ void renderDebugText(char *sceneName, uint32_t duration)
         flags[5] = '*';
     char buffer[256];
     sprintf(buffer,
-            "%s %08d %s SHIP:%03d FIRE:%03d SPD/DLY:%02d/%02d",
-            sceneName, duration, flags, ship->rect.x, fire->rect.y, speed, delay);
+            "%s %08d %s SHIP:%03d FIRE:%03d SPD/DLY:%02d/%02d %d",
+            sceneName, duration, flags,
+            ship->rect.x, fire->rect.y,
+            speed, delay, saucer->frame);
     uint8_t i = 0;
     while (buffer[i])
     {
@@ -219,9 +227,9 @@ void renderScores()
 {
     for (uint8_t i = 0; i < 3; i += 1)
     {
-        // HI, P1, P2
+        // 0=HI, 1=P1, 2=P2
         // Don't display P2 when P1 is playing & vice-versa
-        if (scene != SCENE_GAME || (scene == SCENE_GAME && player == i))
+        if (scene != SCENE_GAME || i == 0 || (scene == SCENE_GAME && player == i))
         {
             //           1         2
             // 012345678901234567890123456789
@@ -236,10 +244,8 @@ void renderScores()
 
 /**
  * @brief Render lives
- *
- * @param lives 1..3
  */
-void renderLives(uint8_t lives)
+void renderLives()
 {
     if (!flagLives)
         return;
@@ -254,8 +260,6 @@ void renderLives(uint8_t lives)
 
 /**
  * @brief Render credits
- *
- * @param credits 0..99
  */
 void renderCredits()
 {
@@ -269,16 +273,11 @@ void renderShip()
 {
     if (!flagShip)
         return;
-    // SDL_Rect rect = {rect.ship->x * ZOOM, SHIP_Y * ZOOM, SHIP_WIDTH * ZOOM, SHIP_HEIGHT * ZOOM};
-    // SDL_RenderCopy(renderer, ship, NULL, &rect);
     renderSprite(ship, renderer, ZOOM);
 }
 
 /**
  * @brief Render fire
- *
- * @param x 0..GAME_WIDTH-1
- * @param y 0..GAME_HEIGHT-1
  */
 void renderFire()
 {
@@ -291,13 +290,6 @@ void renderSaucer()
 {
     if (!flagSaucer)
         return;
-    // SDL_Rect source =
-    //     {0, (saucerExplode > 0) ? SAUCER_HEIGHT : 0,
-    //      SAUCER_WIDTH, SAUCER_HEIGHT};
-    // SDL_Rect destination =
-    //     {saucer->rect.x * ZOOM, 40 * ZOOM,
-    //      SAUCER_WIDTH * ZOOM, SAUCER_HEIGHT * ZOOM};
-    // SDL_RenderCopy(renderer, saucer, &source, &destination);
     saucer->frame = 0;
     if (saucerExplode > 0)
     {
@@ -317,16 +309,16 @@ void renderGrid()
 {
     for (uint16_t x = 0; x < GAME_WIDTH * 2; x += 8)
     {
+        if (x > GAME_WIDTH)
+        {
+            SDL_SetRenderDrawColor(renderer, 0xc0, 0xc0, 0xc0, SDL_ALPHA_OPAQUE);
+        }
+        else
+        {
+            SDL_SetRenderDrawColor(renderer, 0x80, 0x80, 0x80, SDL_ALPHA_OPAQUE);
+        }
         for (uint16_t y = 0; y < GAME_HEIGHT * 2; y += 8)
         {
-            if (x > GAME_WIDTH)
-            {
-                SDL_SetRenderDrawColor(renderer, 0xc0, 0xc0, 0xc0, SDL_ALPHA_OPAQUE);
-            }
-            else
-            {
-                SDL_SetRenderDrawColor(renderer, 0x80, 0x80, 0x80, SDL_ALPHA_OPAQUE);
-            }
             SDL_Rect rect = {
                 x * ZOOM, y * ZOOM,
                 (x + 8) * ZOOM, (y + 8) * ZOOM};
@@ -335,13 +327,23 @@ void renderGrid()
     }
 }
 
-void renderBottomLine()
+void renderLine()
 {
     if (!flagLine)
         return;
     SDL_Rect lineRect = {0 * ZOOM, 239 * ZOOM, GAME_WIDTH * ZOOM, 1 * ZOOM};
     SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, SDL_ALPHA_OPAQUE);
     SDL_RenderFillRect(renderer, &lineRect);
+}
+
+void renderShields()
+{
+    if (!flagShields)
+        return;
+    for (int i = 0; i < 4; i += 1)
+    {
+        renderSprite(shields[i], renderer, ZOOM);
+    }
 }
 
 /**
@@ -357,6 +359,7 @@ void setScene(uint8_t newScene)
     flagFire = SDL_FALSE;
     flagAliens = SDL_FALSE;
     flagSaucer = SDL_FALSE;
+    flagShields = SDL_FALSE;
 
     switch (newScene)
     {
@@ -387,6 +390,7 @@ void setScene(uint8_t newScene)
         flagLives = SDL_TRUE;
         flagShip = SDL_TRUE;
         flagAliens = SDL_TRUE;
+        flagShields = SDL_TRUE;
         break;
     default:
         fprintf(stderr, "Unknown scene #%d\n", newScene);
@@ -396,7 +400,7 @@ void setScene(uint8_t newScene)
 
 void renderScene()
 {
-    static uint32_t lastDuration = 0;
+    static uint32_t lastTicks = 0;
     uint32_t ticks = SDL_GetTicks();
     uint32_t duration = ticks - startTicks;
 
@@ -407,8 +411,8 @@ void renderScene()
     if (scene != SCENE_BOOT)
     {
         renderText("SCORE<1> HI-SCORE SCORE<2>", 1, 1 * 8);
-        renderScores(scores);
-        renderLives(lives);
+        renderScores();
+        renderLives();
         renderText("CREDIT", 17, 30 * 8);
         renderCredits(credits);
     }
@@ -417,6 +421,7 @@ void renderScene()
     {
     case SCENE_BOOT:
         renderDebugText("BOOT", duration);
+        // Switch to HOME scene after 1 second
         if (duration > 1000)
         {
             setScene(SCENE_HOME);
@@ -438,9 +443,21 @@ void renderScene()
         break;
     case SCENE_HOME:
         renderDebugText("HOME", duration);
+        // WIP!
+        renderText("PLAY", 12, 8 * 8);
+        renderText("SPACE  INVADERS", 7, 11 * 8);
+        renderText("*SCORE ADVANCE TABLE*", 3, 15 * 8);
+        SDL_Rect sourceS = {0, 0, SAUCER_WIDTH, SAUCER_HEIGHT};
+        SDL_Rect destinationS = {(9 - 2) * 8 * ZOOM, 17 * 8 * ZOOM, SAUCER_WIDTH * ZOOM, SAUCER_HEIGHT * ZOOM};
+        SDL_RenderCopy(renderer, saucer->texture, &sourceS, &destinationS);
+        renderText("=? MYSTERY", 9, 17 * 8);
+        renderText("=30 POINTS", 9, 19 * 8);
+        renderText("=20 POINTS", 9, 21 * 8);
+        renderText("=10 POINTS", 9, 23 * 8);
         break;
     case SCENE_PLAY:
         renderDebugText("PLAY", duration);
+        // Switch to GAME scene after 1 second
         if (duration > 1000)
         {
             setScene(SCENE_GAME);
@@ -454,12 +471,12 @@ void renderScene()
         break;
     case SCENE_GAME:
         renderDebugText("GAME", duration);
-        // TEST : activate saucer all the time
-        if (!flagSaucer)
-        {
-            flagSaucer = SDL_TRUE;
-            saucer->rect.x = GAME_WIDTH + 1;
-        }
+        // // TEST : activate saucer all the time
+        // if (!flagSaucer)
+        // {
+        //     flagSaucer = SDL_TRUE;
+        //     saucer->rect.x = GAME_WIDTH + 1;
+        // }
         if (flagSaucer)
         {
             saucer->rect.x -= 1;
@@ -515,8 +532,8 @@ void renderScene()
     renderFire();
     // renderAliens();
     renderSaucer();
-    // renderBuildings();
-    renderBottomLine();
+    renderShields();
+    renderLine();
 }
 
 /**
@@ -541,6 +558,13 @@ int main(int argc, char *argv[])
     fire = createSprite(renderer, "./fire.png", 1);
     saucer = createSprite(renderer, "./saucer.png", 2);
     saucer->rect.y = SAUCER_Y;
+    for (int i = 0; i < 4; i += 1)
+    {
+        shields[i] = createSprite(renderer, "./shield.png", 1);
+        // TODO find exact location (32 is good for #1)
+        shields[i]->rect.x = 32 + i * 40;
+        shields[i]->rect.y = SHIELD_Y;
+    }
 
     // Screenshots
     SDL_Texture *screenshots[3];
