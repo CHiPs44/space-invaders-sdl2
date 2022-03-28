@@ -41,10 +41,11 @@ int renderSprite(Sprite *sprite, SDL_Renderer *renderer, int zoom)
     SDL_Rect destination = {
         sprite->rect.x * zoom, sprite->rect.y * zoom,
         sprite->rect.w * zoom, sprite->rect.h * zoom};
-    return SDL_RenderCopy(renderer,
-                          sprite->texture,
-                          &source,
-                          &destination);
+    return SDL_RenderCopy(
+        renderer,
+        sprite->texture,
+        &source,
+        &destination);
 }
 
 // EOF
