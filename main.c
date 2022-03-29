@@ -34,6 +34,15 @@
 #define SAUCER_HEIGHT 8
 #define SAUCER_Y 40
 
+#define ALIEN1_WIDTH 16
+#define ALIEN1_HEIGHT 8
+
+#define ALIEN2_WIDTH 16
+#define ALIEN2_HEIGHT 8
+
+#define ALIEN3_WIDTH 16
+#define ALIEN3_HEIGHT 8
+
 #define SHIELD_WIDTH 24
 #define SHIELD_HEIGHT 16
 #define SHIELD_Y 192
@@ -52,7 +61,10 @@ SDL_Renderer *renderer = NULL;
 SDL_Texture *font = NULL;
 Sprite *ship = NULL;
 Sprite *fire = NULL;
-SDL_Texture *aliens = NULL;
+// SDL_Texture *aliens = NULL;
+Sprite *alien1 = NULL;
+Sprite *alien2 = NULL;
+Sprite *alien3 = NULL;
 Sprite *saucer = NULL;
 Sprite *shields[4] = {NULL, NULL, NULL, NULL};
 
@@ -447,12 +459,25 @@ void renderScene()
         renderText("PLAY", 12, 8 * 8);
         renderText("SPACE  INVADERS", 7, 11 * 8);
         renderText("*SCORE ADVANCE TABLE*", 3, 15 * 8);
+
         SDL_Rect sourceS = {0, 0, SAUCER_WIDTH, SAUCER_HEIGHT};
         SDL_Rect destinationS = {(9 - 2) * 8 * ZOOM, 17 * 8 * ZOOM, SAUCER_WIDTH * ZOOM, SAUCER_HEIGHT * ZOOM};
         SDL_RenderCopy(renderer, saucer->texture, &sourceS, &destinationS);
         renderText("=? MYSTERY", 9, 17 * 8);
+
+        SDL_Rect source3 = {0, 0, ALIEN3_WIDTH, ALIEN3_HEIGHT};
+        SDL_Rect destination3 = {(9 - 2) * 8 * ZOOM, 19 * 8 * ZOOM, ALIEN3_WIDTH * ZOOM, ALIEN3_HEIGHT * ZOOM};
+        SDL_RenderCopy(renderer, alien3->texture, &source3, &destination3);
         renderText("=30 POINTS", 9, 19 * 8);
+
+        SDL_Rect source2 = {0, 0, ALIEN2_WIDTH, ALIEN2_HEIGHT};
+        SDL_Rect destination2 = {(9 - 2) * 8 * ZOOM, 21 * 8 * ZOOM, ALIEN2_WIDTH * ZOOM, ALIEN2_HEIGHT * ZOOM};
+        SDL_RenderCopy(renderer, alien2->texture, &source2, &destination2);
         renderText("=20 POINTS", 9, 21 * 8);
+
+        SDL_Rect source1 = {0, 0, ALIEN1_WIDTH, ALIEN1_HEIGHT};
+        SDL_Rect destination1 = {(9 - 2) * 8 * ZOOM, 23 * 8 * ZOOM, ALIEN1_WIDTH * ZOOM, ALIEN1_HEIGHT * ZOOM};
+        SDL_RenderCopy(renderer, alien1->texture, &source1, &destination1);
         renderText("=10 POINTS", 9, 23 * 8);
         break;
     case SCENE_PLAY:
@@ -556,6 +581,9 @@ int main(int argc, char *argv[])
     ship = createSprite(renderer, "./ship.png", 1);
     ship->rect.y = SHIP_Y;
     fire = createSprite(renderer, "./fire.png", 1);
+    alien1 = createSprite(renderer, "./alien1.png", 2);
+    alien2 = createSprite(renderer, "./alien2.png", 2);
+    alien3 = createSprite(renderer, "./alien3.png", 2);
     saucer = createSprite(renderer, "./saucer.png", 2);
     saucer->rect.y = SAUCER_Y;
     for (int i = 0; i < 4; i += 1)
@@ -616,7 +644,7 @@ int main(int argc, char *argv[])
                 if (flagShip && !flagFire)
                 {
                     flagFire = SDL_TRUE;
-                    fire->rect.x = ship->rect.x + ship->rect.w / 2;
+                    fire->rect.x = ship->rect.x + SHIP_WIDTH / 2;
                     fire->rect.y = ship->rect.y - fire->rect.w;
                 }
             case SDLK_1:
