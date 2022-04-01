@@ -12,7 +12,7 @@ SDL_Texture *screenshots[3];
 uint8_t screenshot = 2;
 SDL_bool grid = SDL_FALSE;
 
-void initDebug()
+void initDebug(void)
 {
     screenshots[0] = IMG_LoadTexture(renderer, "./intro1.png");
     screenshots[1] = IMG_LoadTexture(renderer, "./player-1.png");
@@ -54,7 +54,7 @@ void renderDebugText(char *sceneName, uint32_t duration)
     }
 }
 
-void renderGrid()
+void renderGrid(void)
 {
     if (!grid)
         return;
@@ -78,7 +78,7 @@ void renderGrid()
     }
 }
 
-void renderScreenshot()
+void renderScreenshot(void)
 {
     SDL_Rect screenshotRect = {GAME_WIDTH * zoom, 0, GAME_WIDTH * zoom, GAME_HEIGHT * zoom};
     SDL_RenderCopy(renderer, screenshots[screenshot], NULL, &screenshotRect);

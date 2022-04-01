@@ -9,11 +9,11 @@ Sprite *shootExplosion = NULL;
 SDL_bool flagShip = SDL_FALSE;
 SDL_bool flagShoot = SDL_FALSE;
 uint8_t player = 0;
-int shipDx = 0;
-int playerExploding = 0L;
-int shootExploding = 0L;
+int8_t shipDx = 0;
+uint32_t playerExploding = 0L;
+uint32_t shootExploding = 0L;
 
-void initPlayer()
+void initPlayer(void)
 {
     ship = createSprite1(renderer, "ship.png", 1);
     ship->rect.y = SHIP_Y;
@@ -25,7 +25,7 @@ void initPlayer()
 /**
  * @brief Render ship
  */
-void renderShip()
+void renderShip(void)
 {
     if (!flagShip)
         return;
@@ -35,7 +35,7 @@ void renderShip()
 /**
  * @brief Render shoot
  */
-void renderShoot()
+void renderShoot(void)
 {
     if (!flagShoot)
         return;

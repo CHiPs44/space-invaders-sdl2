@@ -49,7 +49,7 @@ Sprite *createSprite1(SDL_Renderer *renderer, char *filename, int frames)
  * @param frames Frame count (vertical)
  * @return Sprite*
  */
-Sprite *createSprite2(SDL_Renderer *renderer, SDL_Texture *texture, int frames)
+Sprite *createSprite2(SDL_Texture *texture, int frames)
 {
     Sprite *sprite = malloc(sizeof(Sprite));
     sprite->texture = texture;

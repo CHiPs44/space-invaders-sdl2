@@ -28,15 +28,19 @@ void renderChar(char c, uint8_t column, uint16_t y)
     // 2  !"#$%&'()*+,-./0123456789:;<=>?
     // 4 @ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_
     // 6 `abcdefghijklmnopqrstuvwxyz{|}~
-    if (c < 0 || c > 127 || column > 2 * GAME_WIDTH / 8 - 1 || y > (GAME_HEIGHT + 16 - 1))
+    if (c < 0 || column > 2 * GAME_WIDTH / 8 - 1 || y > (GAME_HEIGHT + 16 - 1))
     {
         fprintf(stderr, "renderChar: %c %d %d : char or position out of range!\r\n", c, column, y);
         return;
     }
     uint8_t offset_x = (c % 32) * 8;
     uint8_t offset_y = (c / 32) * 8;
-    SDL_Rect source = {offset_x, offset_y, 8, 8};
-    SDL_Rect destination = {column * 8 * zoom, y * zoom, 8 * zoom, 8 * zoom};
+    SDL_Rect source =
+        {offset_x, offset_y,
+         8, 8};
+    SDL_Rect destination =
+        {column * 8 * zoom, y * zoom,
+         8 * zoom, 8 * zoom};
     SDL_RenderCopy(renderer, font, &source, &destination);
 }
 

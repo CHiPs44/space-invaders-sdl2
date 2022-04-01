@@ -12,6 +12,7 @@
         "stdlib.h": "c",
         "items.h": "c",
         "aliens.h": "c",
-        "debug.h": "c"
+        "debug.h": "c",
+        "sdl_image.h": "c"
     }
 }

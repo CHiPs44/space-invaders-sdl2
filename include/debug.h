@@ -8,9 +8,10 @@ extern SDL_Texture *screenshots[3];
 extern uint8_t screenshot;
 extern SDL_bool grid;
 
+void initDebug(void);
 void renderDebugText(char *sceneName, uint32_t duration);
-void renderGrid();
-void renderScreenshot()
+void renderGrid(void);
+void renderScreenshot(void);
 
 #endif
 

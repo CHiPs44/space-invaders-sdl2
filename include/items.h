@@ -8,10 +8,10 @@ extern uint8_t credits; // 0..99
 extern SDL_bool flagLine;
 extern SDL_bool flagLives;
 
-extern void renderScores();
-extern void renderLives();
-extern void renderCredits();
-extern void renderLine();
+extern void renderScores(void);
+extern void renderLives(void);
+extern void renderCredits(void);
+extern void renderLine(void);
 
 #endif
 

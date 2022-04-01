@@ -2,6 +2,8 @@
  * Scene management
  */
 
+#include <SDL2/SDL.h>
+
 #ifndef SCENE_H
 
 #define SCENE_H
@@ -23,7 +25,7 @@ extern uint32_t step;
 extern uint8_t playMode; // 1=1 player, 2=2 players
 
 void setScene(uint8_t newScene);
-void renderScene();
+void renderScene(void);
 
 #endif
 

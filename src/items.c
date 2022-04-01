@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 
 #include "../include/items.h"
+#include "../include/font.h"
 #include "../include/graphics.h"
 #include "../include/player.h"
 #include "../include/scene.h"
@@ -14,7 +15,7 @@ SDL_bool flagLives = SDL_FALSE;
 /**
  * @brief Render player one, high, player two scores
  */
-void renderScores()
+void renderScores(void)
 {
     renderText("SCORE<1> HI-SCORE SCORE<2>", 1, 1 * 8);
     for (uint8_t i = 0; i < 3; i += 1)
@@ -37,7 +38,7 @@ void renderScores()
 /**
  * @brief Render lives
  */
-void renderLives()
+void renderLives(void)
 {
     if (!flagLives)
         return;
@@ -53,7 +54,7 @@ void renderLives()
 /**
  * @brief Render credits
  */
-void renderCredits()
+void renderCredits(void)
 {
     renderText("CREDIT", 17, 30 * 8);
     renderNumber(credits, 2, 24, 30 * 8);
@@ -62,7 +63,7 @@ void renderCredits()
 /**
  * @brief Render line between player's ship and left lives / credits
  */
-void renderLine()
+void renderLine(void)
 {
     if (!flagLine)
         return;

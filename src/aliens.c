@@ -16,7 +16,7 @@ SDL_bool flagAliens = SDL_FALSE;
 /**
  * @brief Initialize aliens: sprites and locations
  */
-void initAliens()
+void initAliens(void)
 {
     alien1 = createSprite1(renderer, "alien1.png", 2);
     alien2 = createSprite1(renderer, "alien2.png", 2);
@@ -27,7 +27,7 @@ void initAliens()
 /**
  * @brief Reset aliens to start locations
  */
-void resetAliens()
+void resetAliens(void)
 {
     for (int line = 0; line < ALIEN_LINES; line += 1)
     {
@@ -57,7 +57,7 @@ void resetAliens()
                 frames = alien1->frames;
             }
             Alien alien;
-            alien.sprite = createSprite2(renderer, texture, frames);
+            alien.sprite = createSprite2(texture, frames);
             alien.type = type;
             alien.bombing = SDL_FALSE;
             alien.dead = SDL_FALSE;
@@ -69,7 +69,7 @@ void resetAliens()
     alienLastMove = 0L;
 }
 
-void moveAliens()
+void moveAliens(void)
 {
     int now = SDL_GetTicks();
     if (alienLastMove == 0L)
@@ -103,7 +103,7 @@ void moveAliens()
     }
 }
 
-void renderAliens()
+void renderAliens(void)
 {
     if (!flagAliens)
         return;

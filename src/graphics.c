@@ -24,7 +24,7 @@ void graphicsQuit(int status, char *message)
     exit(status);
 }
 
-void graphicsInit()
+void graphicsInit(void)
 {
     if (0 != SDL_Init(SDL_INIT_VIDEO))
     {

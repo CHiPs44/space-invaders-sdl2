@@ -1,3 +1,5 @@
+#include <SDL2/SDL.h>
+
 #ifndef SHIELD_H
 
 #define SHIELD_H
@@ -8,8 +10,9 @@
 
 extern SDL_bool flagShields;
 
-void initShields();
-void renderShields();
+void initShields(void);
+void renderShields(void);
+void shootAtShield(int bombType, uint8_t x);
 
 #endif
 

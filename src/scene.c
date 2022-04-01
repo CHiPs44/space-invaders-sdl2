@@ -2,13 +2,10 @@
  * Scene management
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
-#include "../include/graphics.h"
 #include "../include/scene.h"
+#include "../include/debug.h"
+#include "../include/font.h"
+#include "../include/graphics.h"
 #include "../include/items.h"
 #include "../include/player.h"
 #include "../include/aliens.h"
@@ -24,7 +21,6 @@ uint32_t sceneDuration = 0L;
 uint32_t step = 0L;
 
 uint8_t playMode = 0; // 1=1 player, 2=2 players
-int saucerExploding = 0L;
 
 /**
  * @brief Set the scene
@@ -78,9 +74,9 @@ void setScene(uint8_t newScene)
     }
 }
 
-void renderScene()
+void renderScene(void)
 {
-    static uint32_t lastTicks = 0;
+    // static uint32_t lastTicks = 0;
     uint32_t ticks = SDL_GetTicks();
     sceneDuration = ticks - sceneStart;
 

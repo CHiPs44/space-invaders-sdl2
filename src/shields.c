@@ -5,7 +5,7 @@
 SDL_bool flagShields = SDL_FALSE;
 Sprite *shields[4] = {NULL, NULL, NULL, NULL};
 
-void initShields()
+void initShields(void)
 {
     for (int i = 0; i < 4; i += 1)
     {
@@ -18,7 +18,7 @@ void initShields()
     }
 }
 
-void renderShields()
+void renderShields(void)
 {
     if (!flagShields)
         return;
@@ -30,6 +30,8 @@ void renderShields()
 
 void shootAtShield(int bombType, uint8_t x)
 {
+    int foo = bombType;
+    foo += x;
     // TODO check if shield touched and destroy some pixels in the texture
     // bombType:
     //  0=>player shoot
