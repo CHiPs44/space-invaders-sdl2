@@ -1,3 +1,17 @@
 {
-    "files.associations": {}
+    "files.associations": {
+        "sdl.h": "c",
+        "sprite.h": "c",
+        "const.h": "c",
+        "player.h": "c",
+        "graphics.h": "c",
+        "scene.h": "c",
+        "font.h": "c",
+        "saucer.h": "c",
+        "shields.h": "c",
+        "stdlib.h": "c",
+        "items.h": "c",
+        "aliens.h": "c",
+        "debug.h": "c"
+    }
 }
