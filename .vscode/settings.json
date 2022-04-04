@@ -13,6 +13,7 @@
         "items.h": "c",
         "aliens.h": "c",
         "debug.h": "c",
-        "sdl_image.h": "c"
+        "sdl_image.h": "c",
+        "event.h": "c"
     }
 }

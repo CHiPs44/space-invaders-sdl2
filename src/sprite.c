@@ -3,6 +3,7 @@
  */
 
 #include "../include/sprite.h"
+#include "../include/graphics.h"
 
 /**
  * @brief Further initialize a sprite object
@@ -32,7 +33,7 @@ Sprite *createSprite0(Sprite *sprite, int frames)
  * @param frames   Frame count (vertical)
  * @return Sprite*
  */
-Sprite *createSprite1(SDL_Renderer *renderer, char *filename, int frames)
+Sprite *createSprite1(char *filename, int frames)
 {
     Sprite *sprite = malloc(sizeof(Sprite));
     char buffer[256];
@@ -72,7 +73,7 @@ void killSprite(Sprite *sprite)
  * @param renderer SDL renderer
  * @param zoom Zoom factor 1..4
  */
-void renderSprite(Sprite *sprite, SDL_Renderer *renderer, int zoom)
+void renderSprite(Sprite *sprite)
 {
     SDL_Rect source = {
         0, sprite->rect.h * sprite->frame,

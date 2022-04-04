@@ -9,16 +9,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 
 #include "../include/aliens.h"
 #include "../include/debug.h"
+#include "../include/event.h"
 #include "../include/font.h"
 #include "../include/graphics.h"
 #include "../include/items.h"
 #include "../include/player.h"
 #include "../include/saucer.h"
 #include "../include/scene.h"
+#include "../include/shields.h"
 #include "../include/sprite.h"
 
 // #define WITH_SCREENSHOTS SDL_TRUE
@@ -28,119 +29,42 @@
  */
 int main(void /*int argc, char *argv[]*/)
 {
-    SDL_Event event;
-
     graphicsInit();
 
     // Load assets
+    initAliens();
+    initDebug();
     initFont();
     initPlayer();
-    initAliens();
     initSaucer();
-    initDebug();
+    initShields();
 
+    initScene();
     setScene(SCENE_BOOT);
 
-    SDL_bool stop = SDL_FALSE;
-    while (!stop)
+    while (SDL_TRUE)
     {
-        uint32_t frameBegin = SDL_GetTicks();
+        // uint32_t frameBegin = SDL_GetTicks();
         // Draw current scene
         renderScene();
-        // Draw screenshot
+        // Draw debug & screenshot
+        renderDebugText();
+        renderScreenshot();
         // Helps debugging item positions
         renderGrid();
         // Render complete screen
         SDL_RenderPresent(renderer);
-        // Manage events
-        SDL_PollEvent(&event);
-        switch (event.type)
-        {
-        case SDL_QUIT:
-            stop = 1;
+        // Manage event
+        if (manageEvent())
             break;
-        case SDL_KEYDOWN:
-            switch (event.key.keysym.sym)
-            {
-            case SDLK_ESCAPE:
-                stop = 1;
-                break;
-            case SDLK_LEFT:
-                if (flagShip)
-                    shipDx = -1;
-                break;
-            case SDLK_RIGHT:
-                if (flagShip)
-                    shipDx = 1;
-                break;
-            case SDLK_SPACE:
-                if (flagShip && !flagShoot)
-                {
-                    flagShoot = SDL_TRUE;
-                    shoot->rect.x = ship->rect.x + SHIP_WIDTH / 2;
-                    shoot->rect.y = ship->rect.y - shoot->rect.w;
-                }
-                break;
-            case SDLK_1:
-                if (scene == SCENE_HOME && credits > 0)
-                {
-                    setScene(SCENE_PLAY);
-                    credits -= 1;
-                }
-                break;
-            case SDLK_r:
-                setScene(SCENE_BOOT);
-                break;
-            case SDLK_KP_ENTER:
-                screenshot = (screenshot + 1) % 3;
-                break;
-            case SDLK_KP_PLUS:
-                speed += 1;
-                if (speed > 99)
-                {
-                    speed = 99;
-                }
-                break;
-            case SDLK_KP_MINUS:
-                speed -= 1;
-                if (speed < 0)
-                {
-                    speed = 0;
-                }
-                break;
-            case SDLK_g:
-                grid = 1 - grid;
-                break;
-            default:
-                break;
-            }
-            break;
-        case SDL_KEYUP:
-            switch (event.key.keysym.sym)
-            {
-            case SDLK_LEFT:
-                if (flagShip && shipDx < 0)
-                    shipDx = 0;
-                break;
-            case SDLK_RIGHT:
-                if (flagShip && shipDx > 0)
-                    shipDx = 0;
-                break;
-            default:
-                break;
-            }
-            break;
-        default:
-            break;
-        }
-        uint32_t renderEnd = SDL_GetTicks();
-        int32_t renderTicks = renderEnd - frameBegin;
-        delay = speed - renderTicks;
-        if (delay < 0)
-            delay = 0;
-        if (delay > 100)
-            delay = 100;
-        SDL_Delay(delay);
+        // uint32_t renderEnd = SDL_GetTicks();
+        // int32_t renderTicks = renderEnd - frameBegin;
+        // delay = speed - renderTicks;
+        // if (delay < 0)
+        //     delay = 0;
+        // if (delay > 100)
+        //     delay = 100;
+        // SDL_Delay(delay);
         // uint32_t frameEnd = SDL_GetTicks();
         // uint32_t frameDuration = frameEnd - frameBegin;
     }

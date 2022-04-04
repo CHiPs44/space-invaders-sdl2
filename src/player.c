@@ -15,10 +15,10 @@ uint32_t shootExploding = 0L;
 
 void initPlayer(void)
 {
-    ship = createSprite1(renderer, "ship.png", 1);
+    ship = createSprite1("ship.png", 1);
     ship->rect.y = SHIP_Y;
-    shoot = createSprite1(renderer, "shoot.png", 1);
-    shootExplosion = createSprite1(renderer, "shoot-explosion.png", 1);
+    shoot = createSprite1("shoot.png", 1);
+    shootExplosion = createSprite1("shoot-explosion.png", 1);
     shootExplosion->rect.y = 4 * 8 - 8;
 }
 
@@ -29,7 +29,7 @@ void renderShip(void)
 {
     if (!flagShip)
         return;
-    renderSprite(ship, renderer, zoom);
+    renderSprite(ship);
 }
 
 /**
@@ -40,9 +40,9 @@ void renderShoot(void)
     if (!flagShoot)
         return;
     if (shootExploding != 0L)
-        renderSprite(shoot, renderer, zoom);
+        renderSprite(shoot);
     else
-        renderSprite(shootExplosion, renderer, zoom);
+        renderSprite(shootExplosion);
 }
 
 // EOF

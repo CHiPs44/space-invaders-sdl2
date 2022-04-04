@@ -11,7 +11,7 @@ void initShields(void)
     {
         killSprite(shields[i]);
         // one sprite/texture for each shield
-        shields[i] = createSprite1(renderer, "shield.png", 1);
+        shields[i] = createSprite1("shield.png", 1);
         // TODO find exact location (32 is good for #1)
         shields[i]->rect.x = 32 + i * 40;
         shields[i]->rect.y = SHIELD_Y;
@@ -24,7 +24,7 @@ void renderShields(void)
         return;
     for (int i = 0; i < 4; i += 1)
     {
-        renderSprite(shields[i], renderer, zoom);
+        renderSprite(shields[i]);
     }
 }
 

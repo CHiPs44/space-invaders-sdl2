@@ -8,7 +8,7 @@ Uint32 saucerExploding = 0L;
 
 void initSaucer(void)
 {
-    saucer = createSprite1(renderer, "saucer.png", 2);
+    saucer = createSprite1("saucer.png", 2);
     saucer->rect.y = SAUCER_Y;
 }
 
@@ -28,7 +28,7 @@ void renderSaucer(void)
             saucerExploding = 0;
         }
     }
-    renderSprite(saucer, renderer, zoom);
+    renderSprite(saucer);
 }
 
 // EOF

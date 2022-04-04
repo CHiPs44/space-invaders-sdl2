@@ -9,7 +9,7 @@ extern uint8_t screenshot;
 extern SDL_bool grid;
 
 void initDebug(void);
-void renderDebugText(char *sceneName, uint32_t duration);
+void renderDebugText(void);
 void renderGrid(void);
 void renderScreenshot(void);
 

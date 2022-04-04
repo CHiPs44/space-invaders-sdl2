@@ -18,9 +18,9 @@ SDL_bool flagAliens = SDL_FALSE;
  */
 void initAliens(void)
 {
-    alien1 = createSprite1(renderer, "alien1.png", 2);
-    alien2 = createSprite1(renderer, "alien2.png", 2);
-    alien3 = createSprite1(renderer, "alien3.png", 2);
+    alien1 = createSprite1("alien1.png", 2);
+    alien2 = createSprite1("alien2.png", 2);
+    alien3 = createSprite1("alien3.png", 2);
     resetAliens();
 }
 
@@ -114,7 +114,7 @@ void renderAliens(void)
             Alien *alien = &aliens[line][column];
             if (!alien->dead)
             {
-                renderSprite(alien->sprite, renderer, zoom);
+                renderSprite(alien->sprite);
             }
         }
     }
