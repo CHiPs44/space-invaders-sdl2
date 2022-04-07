@@ -163,14 +163,14 @@ void renderSceneBoot(void)
         // Display random chars
         for (uint8_t line = 0; line < GAME_HEIGHT / 8; line++)
         {
-            for (uint8_t col = 0; col < GAME_WIDTH / 8; col++)
+            for (uint8_t column = 0; column < GAME_WIDTH / 8; column++)
             {
-                // Progressively display less char
-                int c = rand() % (48 + 2 * sceneDuration);
+                // Progressively display less chars
+                int c = rand() % (2 * sceneDuration);
                 if (c <= 255)
                 {
                     // 50% of DEL (block)
-                    renderChar(c > 127 ? 127 : c, col, line * 8);
+                    renderChar(c > 127 ? 127 : c, column, line * 8);
                 }
             }
         }

@@ -29,7 +29,7 @@ void renderDebugText(void)
 {
     char buffer[256];
     sprintf(buffer,
-            "%s %08.03f %04d ZZZ:%08d FPS:%02d",
+            "S:%s D:%06.02f F#:%05d M:%02d FPS:%02d",
             sceneName, sceneDuration / 1000.0, frames,
             sceneDuration > 0 ? frames * 1000 / sceneDuration : 0,
             fps);
