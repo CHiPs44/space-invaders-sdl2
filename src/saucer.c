@@ -3,18 +3,18 @@
 #include "../include/graphics.h"
 
 Sprite *saucer = NULL;
-SDL_bool flagSaucer = SDL_FALSE;
+SDL_bool saucerFlag = SDL_FALSE;
 Uint32 saucerExploding = 0L;
 
 void initSaucer(void)
 {
-    saucer = createSprite1("saucer.png", 2);
+    saucer = createSpriteFromFile("saucer.png", 2);
     saucer->rect.y = SAUCER_Y;
 }
 
 void renderSaucer(void)
 {
-    if (!flagSaucer)
+    if (!saucerFlag)
         return;
     saucer->frame = 0;
     if (saucerExploding > 0)

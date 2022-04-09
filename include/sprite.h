@@ -20,8 +20,8 @@ typedef struct
 } Sprite;
 
 extern Sprite *createSprite0(Sprite *sprite, int frames);
-extern Sprite *createSprite1(char *filename, int frames);
-extern Sprite *createSprite2(SDL_Texture *texture, int frames);
+extern Sprite *createSpriteFromFile(char *filename, int frames);
+extern Sprite *createSpriteFromTexture(SDL_Texture *texture, int frames);
 extern void killSprite(Sprite *sprite);
 extern void renderSprite(Sprite *sprite);
 

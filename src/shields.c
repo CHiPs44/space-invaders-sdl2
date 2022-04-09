@@ -2,7 +2,7 @@
 #include "../include/graphics.h"
 #include "../include/sprite.h"
 
-SDL_bool flagShields = SDL_FALSE;
+SDL_bool shieldsFlag = SDL_FALSE;
 Sprite *shields[4] = {NULL, NULL, NULL, NULL};
 
 void initShields(void)
@@ -11,7 +11,7 @@ void initShields(void)
     {
         killSprite(shields[i]);
         // one sprite/texture for each shield
-        shields[i] = createSprite1("shield.png", 1);
+        shields[i] = createSpriteFromFile("shield.png", 1);
         // TODO find exact location (32 is good for #1)
         shields[i]->rect.x = 32 + i * 40;
         shields[i]->rect.y = SHIELD_Y;
@@ -20,7 +20,7 @@ void initShields(void)
 
 void renderShields(void)
 {
-    if (!flagShields)
+    if (!shieldsFlag)
         return;
     for (int i = 0; i < 4; i += 1)
     {

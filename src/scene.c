@@ -47,13 +47,13 @@ void initScene(void)
  */
 void setScene(uint8_t newScene)
 {
-    flagLine = SDL_FALSE;
-    flagLives = SDL_FALSE;
-    flagShip = SDL_FALSE;
-    flagShoot = SDL_FALSE;
-    flagAliens = SDL_FALSE;
-    flagSaucer = SDL_FALSE;
-    flagShields = SDL_FALSE;
+    lineFlag = SDL_FALSE;
+    livesFlag = SDL_FALSE;
+    shipFlag = SDL_FALSE;
+    shootFlag = SDL_FALSE;
+    aliensFlag = SDL_FALSE;
+    saucerFlag = SDL_FALSE;
+    shieldsFlag = SDL_FALSE;
 
     switch (newScene)
     {
@@ -76,11 +76,11 @@ void setScene(uint8_t newScene)
         strcpy(sceneName, "Game");
         ship->rect.x = (GAME_WIDTH - SHIP_WIDTH) / 2;
         shipDx = 0;
-        flagLine = SDL_TRUE;
-        flagLives = SDL_TRUE;
-        flagShip = SDL_TRUE;
-        flagAliens = SDL_TRUE;
-        flagShields = SDL_TRUE;
+        lineFlag = SDL_TRUE;
+        livesFlag = SDL_TRUE;
+        shipFlag = SDL_TRUE;
+        aliensFlag = SDL_TRUE;
+        shieldsFlag = SDL_TRUE;
         break;
     default:
         strcpy(sceneName, "????");
@@ -166,7 +166,7 @@ void renderSceneBoot(void)
             for (uint8_t column = 0; column < GAME_WIDTH / 8; column++)
             {
                 // Progressively display less chars
-                int c = rand() % (2 * sceneDuration);
+                int c = rand() % (2 * (sceneDuration + 1));
                 if (c <= 255)
                 {
                     // 50% of DEL (block)
@@ -179,18 +179,18 @@ void renderSceneBoot(void)
 
 void renderSceneHome(void)
 {
-    // Title
+    // Title        --------------------------------------------------
     renderText("PLAY", 12, 8 * 8);
     renderText("SPACE  INVADERS", 7, 11 * 8);
     renderText("*SCORE ADVANCE TABLE*", 3, 15 * 8);
-    // Saucer
+    // Saucer       --------------------------------------------------
     SDL_Rect sourceS = {0, 0, SAUCER_WIDTH, SAUCER_HEIGHT};
     SDL_Rect destinationS =
         {(9 - 2) * 8 * zoom, 17 * 8 * zoom,
          SAUCER_WIDTH * zoom, SAUCER_HEIGHT * zoom};
     SDL_RenderCopy(renderer, saucer->texture, &sourceS, &destinationS);
     renderText("=? MYSTERY", 9, 17 * 8);
-    // Alien type 3
+    // Alien type 3 --------------------------------------------------
     SDL_Rect source3 =
         {0, 0,
          ALIEN3_WIDTH, ALIEN3_HEIGHT};
@@ -199,7 +199,7 @@ void renderSceneHome(void)
          ALIEN3_WIDTH * zoom, ALIEN3_HEIGHT * zoom};
     SDL_RenderCopy(renderer, alien3->texture, &source3, &destination3);
     renderText("=30 POINTS", 9, 19 * 8);
-    // Alien type 2
+    // Alien type 2 --------------------------------------------------
     SDL_Rect source2 =
         {0, 0,
          ALIEN2_WIDTH, ALIEN2_HEIGHT};
@@ -208,7 +208,7 @@ void renderSceneHome(void)
          ALIEN2_WIDTH * zoom, ALIEN2_HEIGHT * zoom};
     SDL_RenderCopy(renderer, alien2->texture, &source2, &destination2);
     renderText("=20 POINTS", 9, 21 * 8);
-    // Alien type 1
+    // Alien type 1 --------------------------------------------------
     SDL_Rect source1 =
         {0, 0,
          ALIEN1_WIDTH, ALIEN1_HEIGHT};
@@ -242,12 +242,12 @@ void renderSceneGame(uint32_t ticks)
     //     flagSaucer = SDL_TRUE;
     //     saucer->rect.x = GAME_WIDTH + 1;
     // }
-    if (frameChanged && flagSaucer)
+    if (frameChanged && saucerFlag)
     {
         saucer->rect.x -= 1;
         if (saucer->rect.x <= -16)
         {
-            flagSaucer = SDL_FALSE;
+            saucerFlag = SDL_FALSE;
         }
     }
     // Check if ship can/has to move
@@ -264,11 +264,11 @@ void renderSceneGame(uint32_t ticks)
     //     // TODO
     // }
     // Check if shoot can go up
-    if (flagShoot)
+    if (shootFlag)
     {
         if (shootExploding != 0L && ticks > shootExploding)
         {
-            flagShoot = SDL_FALSE;
+            shootFlag = SDL_FALSE;
             shootExploding = 0L;
         }
         else
@@ -282,8 +282,8 @@ void renderSceneGame(uint32_t ticks)
         }
     }
     // Check if saucer touched by shoot
-    if (flagSaucer &&
-        flagShoot &&
+    if (saucerFlag &&
+        shootFlag &&
         shoot->rect.y <= SAUCER_Y + SAUCER_HEIGHT &&
         shoot->rect.x >= saucer->rect.x &&
         shoot->rect.x <= saucer->rect.x + SAUCER_WIDTH)
@@ -292,7 +292,7 @@ void renderSceneGame(uint32_t ticks)
         scores[player] += 50; // TODO
     }
     // Check if alien touched by shoot
-    if (flagShoot)
+    if (shootFlag)
     {
         // TODO
     }

@@ -33,7 +33,7 @@ Sprite *createSprite0(Sprite *sprite, int frames)
  * @param frames   Frame count (vertical)
  * @return Sprite*
  */
-Sprite *createSprite1(char *filename, int frames)
+Sprite *createSpriteFromFile(char *filename, int frames)
 {
     Sprite *sprite = malloc(sizeof(Sprite));
     char buffer[256];
@@ -50,7 +50,7 @@ Sprite *createSprite1(char *filename, int frames)
  * @param frames Frame count (vertical)
  * @return Sprite*
  */
-Sprite *createSprite2(SDL_Texture *texture, int frames)
+Sprite *createSpriteFromTexture(SDL_Texture *texture, int frames)
 {
     Sprite *sprite = malloc(sizeof(Sprite));
     sprite->texture = texture;

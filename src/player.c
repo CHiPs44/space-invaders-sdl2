@@ -6,8 +6,8 @@
 Sprite *ship = NULL;
 Sprite *shoot = NULL;
 Sprite *shootExplosion = NULL;
-SDL_bool flagShip = SDL_FALSE;
-SDL_bool flagShoot = SDL_FALSE;
+SDL_bool shipFlag = SDL_FALSE;
+SDL_bool shootFlag = SDL_FALSE;
 uint8_t player = 0;
 int8_t shipDx = 0;
 uint32_t playerExploding = 0L;
@@ -15,10 +15,10 @@ uint32_t shootExploding = 0L;
 
 void initPlayer(void)
 {
-    ship = createSprite1("ship.png", 1);
+    ship = createSpriteFromFile("ship.png", 1);
     ship->rect.y = SHIP_Y;
-    shoot = createSprite1("shoot.png", 1);
-    shootExplosion = createSprite1("shoot-explosion.png", 1);
+    shoot = createSpriteFromFile("shoot.png", 1);
+    shootExplosion = createSpriteFromFile("shoot-explosion.png", 1);
     shootExplosion->rect.y = 4 * 8 - 8;
 }
 
@@ -27,7 +27,7 @@ void initPlayer(void)
  */
 void renderShip(void)
 {
-    if (!flagShip)
+    if (!shipFlag)
         return;
     renderSprite(ship);
 }
@@ -37,7 +37,7 @@ void renderShip(void)
  */
 void renderShoot(void)
 {
-    if (!flagShoot)
+    if (!shootFlag)
         return;
     if (shootExploding != 0L)
         renderSprite(shoot);

@@ -9,7 +9,7 @@
 #define SAUCER_Y 40
 
 extern Sprite *saucer;
-extern SDL_bool flagSaucer;
+extern SDL_bool saucerFlag;
 extern Uint32 saucerExploding; // end of exploding saucer
 
 void initSaucer(void);

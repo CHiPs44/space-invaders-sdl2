@@ -29,17 +29,17 @@ SDL_bool manageEvent(void)
             stop = SDL_TRUE;
             break;
         case SDLK_LEFT:
-            if (flagShip)
+            if (shipFlag)
                 shipDx = -1;
             break;
         case SDLK_RIGHT:
-            if (flagShip)
+            if (shipFlag)
                 shipDx = 1;
             break;
         case SDLK_SPACE:
-            if (flagShip && !flagShoot)
+            if (shipFlag && !shootFlag)
             {
-                flagShoot = SDL_TRUE;
+                shootFlag = SDL_TRUE;
                 shoot->rect.x = ship->rect.x + SHIP_WIDTH / 2;
                 shoot->rect.y = ship->rect.y - shoot->rect.w;
             }
@@ -82,11 +82,11 @@ SDL_bool manageEvent(void)
         switch (event.key.keysym.sym)
         {
         case SDLK_LEFT:
-            if (flagShip && shipDx < 0)
+            if (shipFlag && shipDx < 0)
                 shipDx = 0;
             break;
         case SDLK_RIGHT:
-            if (flagShip && shipDx > 0)
+            if (shipFlag && shipDx > 0)
                 shipDx = 0;
             break;
         default:

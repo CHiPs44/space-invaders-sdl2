@@ -7,20 +7,20 @@ Sprite *alien1 = NULL;
 Sprite *alien2 = NULL;
 Sprite *alien3 = NULL;
 Alien aliens[ALIEN_LINES][ALIEN_COLUMNS];
-int alienSpeed = 500;
+int alienSpeed = 500L;
 int alienLastMove = 0L;
 int alienDx = 0;
 int alienDy = 0;
-SDL_bool flagAliens = SDL_FALSE;
+SDL_bool aliensFlag = SDL_FALSE;
 
 /**
  * @brief Initialize aliens: sprites and locations
  */
 void initAliens(void)
 {
-    alien1 = createSprite1("alien1.png", 2);
-    alien2 = createSprite1("alien2.png", 2);
-    alien3 = createSprite1("alien3.png", 2);
+    alien1 = createSpriteFromFile("alien1.png", 2);
+    alien2 = createSpriteFromFile("alien2.png", 2);
+    alien3 = createSpriteFromFile("alien3.png", 2);
     resetAliens();
 }
 
@@ -57,7 +57,7 @@ void resetAliens(void)
                 frames = alien1->frames;
             }
             Alien alien;
-            alien.sprite = createSprite2(texture, frames);
+            alien.sprite = createSpriteFromTexture(texture, frames);
             alien.type = type;
             alien.bombing = SDL_FALSE;
             alien.dead = SDL_FALSE;
@@ -67,6 +67,8 @@ void resetAliens(void)
         }
     }
     alienLastMove = 0L;
+    alienDx = 1;
+    alienDy = 0;
 }
 
 void moveAliens(void)
@@ -78,13 +80,13 @@ void moveAliens(void)
     }
     else if (alienLastMove + alienSpeed < now)
     {
-        // Waiting until next move
-        return;
+        return; // Wait until next move
     }
     else
     {
         alienLastMove = now;
     }
+    fprintf(stderr, "moveAliens: %d, dx=%d, dy=%d\n", alienLastMove, alienDx, alienDy);
     // TODO check reached right?
     // TODO check reached left?
     for (int line = 0; line < ALIEN_LINES; line += 1)
@@ -105,7 +107,7 @@ void moveAliens(void)
 
 void renderAliens(void)
 {
-    if (!flagAliens)
+    if (!aliensFlag)
         return;
     for (int line = 0; line < ALIEN_LINES; line += 1)
     {
