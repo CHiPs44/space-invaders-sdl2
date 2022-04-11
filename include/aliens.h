@@ -26,6 +26,10 @@
 #define ALIEN3_WIDTH 16
 #define ALIEN3_HEIGHT 8
 
+#define  ALIEN_ROLLING_SHOT   0
+#define  ALIEN_PLUNGER_SHOT   1
+#define  ALIEN_SQUIGGLY_SHOT  2
+
 extern Sprite *alien1;
 extern Sprite *alien2;
 extern Sprite *alien3;
