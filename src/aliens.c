@@ -8,14 +8,16 @@ Sprite *alien2 = NULL;
 Sprite *alien3 = NULL;
 Sprite *alienShots[] = {NULL, NULL, NULL};
 Alien aliens[ALIEN_LINES][ALIEN_COLUMNS];
-int alienSpeed = 500L;
-int alienLastMove = 0L;
+int alienDelay;
+int alienDown;
+int alienAccel;
+int alienNextMove = 0L;
 int alienDx = 0;
 int alienDy = 0;
 SDL_bool aliensFlag = SDL_FALSE;
 
 /**
- * @brief Initialize aliens: sprites and locations
+ * @brief Initialize aliens sprites
  */
 void initAliens(void)
 {
@@ -25,7 +27,6 @@ void initAliens(void)
     alienShots[ALIEN_ROLLING_SHOT] = createSpriteFromFile("rolling.png", 2);
     alienShots[ALIEN_PLUNGER_SHOT] = createSpriteFromFile("plunger.png", 2);
     alienShots[ALIEN_SQUIGGLY_SHOT] = createSpriteFromFile("squiggly.png", 2);
-    resetAliens();
 }
 
 /**
@@ -64,47 +65,76 @@ void resetAliens(void)
             alien.sprite = createSpriteFromTexture(texture, frames);
             alien.type = type;
             alien.bombing = SDL_FALSE;
-            alien.dead = SDL_FALSE;
+            alien.alive = SDL_TRUE;
             alien.sprite->rect.x = x;
             alien.sprite->rect.y = y;
             aliens[line][column] = alien;
         }
     }
-    alienLastMove = 0L;
+    alienDelay = 128L; // 512L;
+    alienAccel = 64L;
+    alienNextMove = 0L;
     alienDx = 1;
     alienDy = 0;
+    alienDown = 0;
 }
 
+/**
+ * @brief Move aliens left or right and down eventually
+ */
 void moveAliens(void)
 {
     int now = SDL_GetTicks();
-    if (alienLastMove == 0L)
+    if (alienNextMove == 0L)
     {
-        alienLastMove = now;
+        // Start move
+        alienNextMove = now + alienDelay;
     }
-    else if (alienLastMove + alienSpeed < now)
+    else if (now < alienNextMove)
     {
-        return; // Wait until next move
+        // Wait until next move
+        return;
     }
-    else
-    {
-        alienLastMove = now;
-    }
-    fprintf(stderr, "moveAliens: %d, dx=%d, dy=%d\n", alienLastMove, alienDx, alienDy);
-    // TODO check reached right?
-    // TODO check reached left?
+    // Set next move
+    alienNextMove = now + alienDelay;
+    int minX = GAME_WIDTH;
+    int maxX = 0;
+    int maxY = 0;
+    int aliveCount = 0;
     for (int line = 0; line < ALIEN_LINES; line += 1)
     {
         for (int column = 0; column < ALIEN_COLUMNS; column += 1)
         {
             Alien *alien = &aliens[line][column];
-            if (!alien->dead)
+            if (alien->alive)
             {
-                // 1-0=>1, 0-1=>0
+                aliveCount += 1;
+                // Change frame: 1-0=>1, 0-1=>0
                 alien->sprite->frame = 1 - alien->sprite->frame;
                 alien->sprite->rect.x += alienDx;
                 alien->sprite->rect.y += alienDy;
+                minX = alien->sprite->rect.x < minX
+                           ? alien->sprite->rect.x
+                           : minX;
+                maxX = alien->sprite->rect.x + ALIEN1_WIDTH > maxX
+                           ? alien->sprite->rect.x + ALIEN1_WIDTH
+                           : maxX;
+                maxY = alien->sprite->rect.y + ALIEN1_HEIGHT > maxY
+                           ? alien->sprite->rect.y + ALIEN1_HEIGHT
+                           : maxY;
             }
+        }
+    }
+    alienDy = 0;
+    if ((alienDx == -1 && minX < 8) || (alienDx == 1 && maxX > GAME_WIDTH - 8))
+    {
+        alienDx = -alienDx;
+        alienDy = 1;
+        alienDown += 1;
+        if (alienDown > 8)
+        {
+            alienDelay -= alienAccel;
+            alienDown = 0;
         }
     }
 }
@@ -118,7 +148,7 @@ void renderAliens(void)
         for (int column = 0; column < ALIEN_COLUMNS; column += 1)
         {
             Alien *alien = &aliens[line][column];
-            if (!alien->dead)
+            if (alien->alive)
             {
                 renderSprite(alien->sprite);
             }

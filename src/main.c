@@ -44,7 +44,7 @@ int main(void /*int argc, char *argv[]*/)
 
     while (SDL_TRUE)
     {
-        // uint32_t frameBegin = SDL_GetTicks();
+        uint32_t renderBegin = SDL_GetTicks();
         // Draw current scene
         renderScene();
         // Draw debug & screenshot
@@ -57,14 +57,14 @@ int main(void /*int argc, char *argv[]*/)
         // Manage event
         if (manageEvent())
             break;
-        // uint32_t renderEnd = SDL_GetTicks();
-        // int32_t renderTicks = renderEnd - frameBegin;
-        // delay = speed - renderTicks;
-        // if (delay < 0)
-        //     delay = 0;
-        // if (delay > 100)
-        //     delay = 100;
-        // SDL_Delay(delay);
+        uint32_t renderEnd = SDL_GetTicks();
+        int32_t renderTicks = renderEnd - renderBegin;
+        delay = speed - renderTicks;
+        if (delay < 0)
+            delay = 0;
+        if (delay > 100)
+            delay = 100;
+        SDL_Delay(delay);
         // uint32_t frameEnd = SDL_GetTicks();
         // uint32_t frameDuration = frameEnd - frameBegin;
     }

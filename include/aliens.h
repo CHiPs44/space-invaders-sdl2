@@ -41,7 +41,7 @@ typedef struct
     int type; // 1..3
     int exploding;
     int bombing;
-    SDL_bool dead;
+    SDL_bool alive;
 } Alien;
 
 extern Alien aliens[ALIEN_LINES][ALIEN_COLUMNS];

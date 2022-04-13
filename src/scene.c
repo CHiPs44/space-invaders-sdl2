@@ -12,7 +12,7 @@
 #include "../include/shields.h"
 #include "../include/saucer.h"
 
-int32_t speed = 7;
+int32_t speed = 16;
 int32_t delay;
 
 uint32_t fps = 25;
@@ -76,6 +76,7 @@ void setScene(uint8_t newScene)
         strcpy(sceneName, "Game");
         ship->rect.x = (GAME_WIDTH - SHIP_WIDTH) / 2;
         shipDx = 0;
+        resetAliens();
         lineFlag = SDL_TRUE;
         livesFlag = SDL_TRUE;
         shipFlag = SDL_TRUE;
@@ -98,7 +99,15 @@ void renderScene(void)
 {
     uint32_t ticks = SDL_GetTicks();
     sceneDuration = ticks - sceneStart;
-    frameDuration = ticks - frameStart;
+    if (frameStart == 0L)
+    {
+        frameStart = ticks;
+        frameDuration = 0L;
+    }
+    else
+    {
+        frameDuration = ticks - frameStart;
+    }
     frameChanged = SDL_FALSE;
     if (frameDuration > 1000 / fps)
     {
@@ -114,7 +123,8 @@ void renderScene(void)
     //     return;
 
     // Clear screen to black
-    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
+    // SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderDrawColor(renderer, 0x30, 0x30, 0x30, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
     // Render "always here" items, except in BOOT scene
     if (scene != SCENE_BOOT)
