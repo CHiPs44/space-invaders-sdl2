@@ -28,7 +28,6 @@ Sprite *createSprite0(Sprite *sprite, int frames)
 /**
  * @brief Create a sprite object with a image file
  *
- * @param renderer SDL renderer
  * @param filename File name, e.g. "ship.png"
  * @param frames   Frame count (vertical)
  * @return Sprite*
@@ -37,7 +36,7 @@ Sprite *createSpriteFromFile(char *filename, int frames)
 {
     Sprite *sprite = malloc(sizeof(Sprite));
     char buffer[256];
-    sprintf(buffer, "./assets/%s", filename);
+    snprintf(buffer, 256, "./assets/%s", filename);
     sprite->texture = IMG_LoadTexture(renderer, buffer);
     return createSprite0(sprite, frames);
 }
@@ -45,7 +44,6 @@ Sprite *createSpriteFromFile(char *filename, int frames)
 /**
  * @brief Create sprite object from SDL texture
  *
- * @param renderer SDL renderer
  * @param texture SDL texture
  * @param frames Frame count (vertical)
  * @return Sprite*
@@ -70,22 +68,22 @@ void killSprite(Sprite *sprite)
  * @brief Render sprite
  *
  * @param sprite Sprite object
- * @param renderer SDL renderer
- * @param zoom Zoom factor 1..4
  */
 void renderSprite(Sprite *sprite)
 {
+    // SDL_assert(NULL!=sprite);
+    int frame = sprite->frame < 0
+                    ? 0
+                    : (sprite->frame > sprite->frames ? sprite->frames : sprite->frame);
     SDL_Rect source = {
-        0, sprite->rect.h * sprite->frame,
+        0, sprite->rect.h * frame,
         sprite->rect.w, sprite->rect.h};
     SDL_Rect destination = {
-        sprite->rect.x * zoom, sprite->rect.y * zoom,
-        sprite->rect.w * zoom, sprite->rect.h * zoom};
-    if (0 != SDL_RenderCopy(
-                 renderer,
-                 sprite->texture,
-                 &source,
-                 &destination))
+        offsetX + sprite->rect.x * zoom,
+        offsetY + sprite->rect.y * zoom,
+        sprite->rect.w * zoom,
+        sprite->rect.h * zoom};
+    if (0 != SDL_RenderCopy(renderer, sprite->texture, &source, &destination))
     {
         fprintf(stderr, "SDL_RenderCopy!");
     }

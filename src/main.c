@@ -22,14 +22,12 @@
 #include "../include/shields.h"
 #include "../include/sprite.h"
 
-// #define WITH_SCREENSHOTS SDL_TRUE
-
 /**
  * @brief Here we go!
  */
 int main(void /*int argc, char *argv[]*/)
 {
-    graphicsInit();
+    initGraphics();
 
     // Load assets
     initAliens();
@@ -70,7 +68,7 @@ int main(void /*int argc, char *argv[]*/)
     }
 
     // Fin des haricots
-    graphicsQuit(EXIT_SUCCESS, NULL);
+    stopGraphics(EXIT_SUCCESS, NULL, NULL);
 }
 
 // EOF

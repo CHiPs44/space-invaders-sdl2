@@ -9,7 +9,7 @@ void initFont()
     font = IMG_LoadTexture(renderer, "./assets/font.png");
     if (font == NULL)
     {
-        graphicsQuit(EXIT_FAILURE, "initFont");
+        stopGraphics(EXIT_FAILURE, "initFont", SDL_GetError());
     }
 }
 
@@ -39,7 +39,7 @@ void renderChar(char c, uint8_t column, uint16_t y)
         {offset_x, offset_y,
          8, 8};
     SDL_Rect destination =
-        {column * 8 * zoom, y * zoom,
+        {offsetX + column * 8 * zoom, offsetY + y * zoom,
          8 * zoom, 8 * zoom};
     SDL_RenderCopy(renderer, font, &source, &destination);
 }

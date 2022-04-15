@@ -59,9 +59,9 @@ SDL_bool manageEvent(void)
             break;
         case SDLK_KP_PLUS:
             speed += 1;
-            if (speed > 99)
+            if (speed > 50)
             {
-                speed = 99;
+                speed = 50;
             }
             break;
         case SDLK_KP_MINUS:

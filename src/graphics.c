@@ -1,16 +1,29 @@
 #include "../include/graphics.h"
 #include "../include/const.h"
 
-int zoom = 3;
+int zoom = 2;
+int offsetX;
+int offsetY;
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 
-void graphicsQuit(int status, char *message)
+/**
+ * @brief Reset SDL, optionnally print error message then quit
+ *
+ * @param status  EXIT_SUCCESS, EXIT_FAILURE, STATUS_RESET
+ * @param message generally function name of failure
+ * @param error   generally SDL_GetError()
+ */
+void stopGraphics(int status, const char *message, const char *error)
 {
     IMG_Quit();
-    if (NULL != message)
+    if (NULL != message && NULL != error)
     {
-        fprintf(stderr, "%s : %s", message, SDL_GetError());
+        fprintf(stderr, "%s: %s\n", message, error);
+    }
+    if (NULL != message && NULL == error)
+    {
+        fprintf(stderr, "%s\n", message);
     }
     if (NULL != renderer)
     {
@@ -21,35 +34,46 @@ void graphicsQuit(int status, char *message)
         SDL_DestroyWindow(window);
     }
     SDL_Quit();
-    exit(status);
+    if (STATUS_RESET != status)
+    {
+        exit(status);
+    }
 }
 
-void graphicsInit(void)
+void initGraphics(void)
 {
-    if (0 != SDL_Init(SDL_INIT_VIDEO))
+    if (0 != SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS))
     {
-        graphicsQuit(EXIT_FAILURE, "SDL_Init");
+        stopGraphics(EXIT_FAILURE, "SDL_Init", SDL_GetError());
     }
-    char title[64];
-    sprintf(title, "Space Invaders 1978 (%dx%dx%d)", GAME_WIDTH, GAME_HEIGHT, zoom);
+    int width = WINDOW_WIDTH * zoom * 2;
+    int height = (WINDOW_HEIGHT/* + DEBUG_HEIGHT*/) * zoom;
+    offsetX = (width - GAME_WIDTH * 2 * zoom) / 2;
+    offsetY = (height - GAME_HEIGHT * zoom) / 2;
+    char title[256];
+    snprintf(
+        title, 256,
+        "Space Invaders 1978 (%dx%dx%d) (%d+%dx%d+%d)",
+        GAME_WIDTH, GAME_HEIGHT, zoom,
+        width, offsetX, height, offsetY);
     window = SDL_CreateWindow(
         title,
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        GAME_WIDTH * zoom * 2, (GAME_HEIGHT + 16) * zoom,
+        width, height,
         SDL_WINDOW_SHOWN);
     if (NULL == window)
     {
-        graphicsQuit(EXIT_FAILURE, "SDL_CreateWindow");
+        stopGraphics(EXIT_FAILURE, "SDL_CreateWindow", SDL_GetError());
     }
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); // | SDL_RENDERER_PRESENTVSYNC);
     if (NULL == renderer)
     {
-        graphicsQuit(EXIT_FAILURE, "SDL_CreateRenderer");
+        stopGraphics(EXIT_FAILURE, "SDL_CreateRenderer", SDL_GetError());
     }
     if (IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG)
     {
-        graphicsQuit(EXIT_FAILURE, "IMG_Init");
+        stopGraphics(EXIT_FAILURE, "IMG_Init", SDL_GetError());
     }
 }
 

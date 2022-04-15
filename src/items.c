@@ -45,7 +45,7 @@ void renderLives(void)
     renderChar('0' + lives, 1, 30 * 8);
     for (uint8_t i = 0; i < lives - 1; i += 1)
     {
-        SDL_Rect rect = {(26 + i * 16) * zoom, 30 * 8 * zoom,
+        SDL_Rect rect = {offsetX + (26 + i * 16) * zoom, offsetY + 30 * 8 * zoom,
                          SHIP_WIDTH * zoom, SHIP_HEIGHT * zoom};
         SDL_RenderCopy(renderer, ship->texture, NULL, &rect);
     }
@@ -67,7 +67,7 @@ void renderLine(void)
 {
     if (!lineFlag)
         return;
-    SDL_Rect lineRect = {0 * zoom, 239 * zoom, GAME_WIDTH * zoom, 1 * zoom};
+    SDL_Rect lineRect = {offsetX + 0 * zoom, offsetY + 239 * zoom, GAME_WIDTH * zoom, 1 * zoom};
     SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, SDL_ALPHA_OPAQUE);
     SDL_RenderFillRect(renderer, &lineRect);
 }

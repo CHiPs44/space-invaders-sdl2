@@ -30,18 +30,21 @@
 #define  ALIEN_PLUNGER_SHOT   1
 #define  ALIEN_SQUIGGLY_SHOT  2
 
+#define ALIEN_IS_DEAD 0
+#define ALIEN_IS_EXPLODING 1
+#define ALIEN_IS_ALIVE 1
+
 extern Sprite *alien1;
 extern Sprite *alien2;
 extern Sprite *alien3;
+Sprite *alienShots[];
 extern SDL_bool aliensFlag;
 
 typedef struct
 {
     Sprite *sprite;
     int type; // 1..3
-    int exploding;
-    int bombing;
-    SDL_bool alive;
+    int state;
 } Alien;
 
 extern Alien aliens[ALIEN_LINES][ALIEN_COLUMNS];

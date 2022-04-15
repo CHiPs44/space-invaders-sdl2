@@ -7,15 +7,26 @@
 
 #define GRAPHICS_H
 
+#define STATUS_RESET -1
+
 #define GAME_WIDTH 224
 #define GAME_HEIGHT 256
 
+#define WINDOW_WIDTH 240
+#define WINDOW_HEIGHT 320
+
+#define DEBUG_HEIGHT 16
+
+#define WITH_SCREENSHOTS SDL_TRUE
+
 extern int zoom;
+extern int offsetX;
+extern int offsetY;
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 
-void graphicsQuit(int status, char *message);
-void graphicsInit(void);
+void stopGraphics(int status, const char *message, const char *error);
+void initGraphics(void);
 
 #endif
 

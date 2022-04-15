@@ -14,7 +14,6 @@
 
 int32_t speed = 16;
 int32_t delay;
-
 uint32_t fps = 25;
 
 uint8_t scene = SCENE_NONE;
@@ -126,6 +125,7 @@ void renderScene(void)
     // SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
     SDL_SetRenderDrawColor(renderer, 0x30, 0x30, 0x30, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
+    // renderText("\001\002\003\004\005", GAME_WIDTH / 8 - 5, GAME_HEIGHT - 8);
     // Render "always here" items, except in BOOT scene
     if (scene != SCENE_BOOT)
     {
@@ -196,7 +196,7 @@ void renderSceneHome(void)
     // Saucer       --------------------------------------------------
     SDL_Rect sourceS = {0, 0, SAUCER_WIDTH, SAUCER_HEIGHT};
     SDL_Rect destinationS =
-        {(9 - 2) * 8 * zoom, 17 * 8 * zoom,
+        {offsetX + (9 - 2) * 8 * zoom, offsetY + 17 * 8 * zoom,
          SAUCER_WIDTH * zoom, SAUCER_HEIGHT * zoom};
     SDL_RenderCopy(renderer, saucer->texture, &sourceS, &destinationS);
     renderText("=? MYSTERY", 9, 17 * 8);
@@ -205,7 +205,7 @@ void renderSceneHome(void)
         {0, 0,
          ALIEN3_WIDTH, ALIEN3_HEIGHT};
     SDL_Rect destination3 =
-        {(9 - 2) * 8 * zoom, 19 * 8 * zoom,
+        {offsetX + (9 - 2) * 8 * zoom, offsetY + 19 * 8 * zoom,
          ALIEN3_WIDTH * zoom, ALIEN3_HEIGHT * zoom};
     SDL_RenderCopy(renderer, alien3->texture, &source3, &destination3);
     renderText("=30 POINTS", 9, 19 * 8);
@@ -214,7 +214,7 @@ void renderSceneHome(void)
         {0, 0,
          ALIEN2_WIDTH, ALIEN2_HEIGHT};
     SDL_Rect destination2 =
-        {(9 - 2) * 8 * zoom, 21 * 8 * zoom,
+        {offsetX + (9 - 2) * 8 * zoom, offsetY + 21 * 8 * zoom,
          ALIEN2_WIDTH * zoom, ALIEN2_HEIGHT * zoom};
     SDL_RenderCopy(renderer, alien2->texture, &source2, &destination2);
     renderText("=20 POINTS", 9, 21 * 8);
@@ -223,7 +223,7 @@ void renderSceneHome(void)
         {0, 0,
          ALIEN1_WIDTH, ALIEN1_HEIGHT};
     SDL_Rect destination1 =
-        {(9 - 2) * 8 * zoom, 23 * 8 * zoom,
+        {offsetX + (9 - 2) * 8 * zoom, offsetY + 23 * 8 * zoom,
          ALIEN1_WIDTH * zoom, ALIEN1_HEIGHT * zoom};
     SDL_RenderCopy(renderer, alien1->texture, &source1, &destination1);
     renderText("=10 POINTS", 9, 23 * 8);

@@ -29,12 +29,10 @@ void renderDebugText(void)
 {
     char buffer[256];
     sprintf(buffer,
-            "S:%s D:%06.02f F#:%05d M:%02d FPS:%02d",
+            "S:%s D:%06.01f F:%06d M:%02d S:%03d D:%03d",
             sceneName, sceneDuration / 1000.0, frames,
             sceneDuration > 0 ? frames * 1000 / sceneDuration : 0,
-            fps);
-    // SHP:%03d SHT:%03d ship->rect.x, shoot->rect.y,
-    // SPD:%02d DLY:%02d speed, delay
+            speed, delay);
     uint8_t i = 0;
     while (buffer[i])
     {
@@ -60,7 +58,7 @@ void renderGrid(void)
         for (uint16_t y = 0; y < GAME_HEIGHT * 2; y += 8)
         {
             SDL_Rect rect = {
-                x * zoom, y * zoom,
+                offsetX + x * zoom, offsetY + y * zoom,
                 (x + 8) * zoom, (y + 8) * zoom};
             SDL_RenderDrawRect(renderer, &rect);
         }
@@ -71,7 +69,7 @@ void renderScreenshot(void)
 {
     // fprintf(stderr,"renderScreenshot: %d\n",frames);
     SDL_Rect screenshotRect =
-        {GAME_WIDTH * zoom, 0 * zoom,
+        {offsetX + GAME_WIDTH * zoom, offsetY + 0 * zoom,
          GAME_WIDTH * zoom, GAME_HEIGHT * zoom};
     SDL_RenderCopy(renderer, screenshots[screenshot], NULL, &screenshotRect);
 }

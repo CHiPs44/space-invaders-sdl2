@@ -43,18 +43,21 @@ void resetAliens(void)
             SDL_Texture *texture;
             int type;
             int frames;
+            // TOP LINE: "HARD" ALIENS
             if (line == 0)
             {
                 type = 3;
                 texture = alien3->texture;
                 frames = alien3->frames;
             }
+            // LINES 1 & 2: "NOT TOO EASY" ALIENS
             else if (line <= 2)
             {
                 type = 2;
                 texture = alien2->texture;
                 frames = alien2->frames;
             }
+            // LINES 3 TO END: "EASY" ALIENS
             else
             {
                 type = 1;
@@ -64,14 +67,13 @@ void resetAliens(void)
             Alien alien;
             alien.sprite = createSpriteFromTexture(texture, frames);
             alien.type = type;
-            alien.bombing = SDL_FALSE;
-            alien.alive = SDL_TRUE;
+            alien.state = ALIEN_IS_ALIVE;
             alien.sprite->rect.x = x;
             alien.sprite->rect.y = y;
             aliens[line][column] = alien;
         }
     }
-    alienDelay = 128L; // 512L;
+    alienDelay = 512L;
     alienAccel = 64L;
     alienNextMove = 0L;
     alienDx = 1;
@@ -106,7 +108,7 @@ void moveAliens(void)
         for (int column = 0; column < ALIEN_COLUMNS; column += 1)
         {
             Alien *alien = &aliens[line][column];
-            if (alien->alive)
+            if (alien->state == ALIEN_IS_ALIVE)
             {
                 aliveCount += 1;
                 // Change frame: 1-0=>1, 0-1=>0
@@ -122,10 +124,14 @@ void moveAliens(void)
                 maxY = alien->sprite->rect.y + ALIEN1_HEIGHT > maxY
                            ? alien->sprite->rect.y + ALIEN1_HEIGHT
                            : maxY;
+            } else if (alien->state == ALIEN_IS_EXPLODING)
+            {
+                alien->sprite->frame = 2;
             }
         }
     }
     alienDy = 0;
+    
     if ((alienDx == -1 && minX < 8) || (alienDx == 1 && maxX > GAME_WIDTH - 8))
     {
         alienDx = -alienDx;
@@ -148,7 +154,7 @@ void renderAliens(void)
         for (int column = 0; column < ALIEN_COLUMNS; column += 1)
         {
             Alien *alien = &aliens[line][column];
-            if (alien->alive)
+            if (alien->state != ALIEN_IS_DEAD)
             {
                 renderSprite(alien->sprite);
             }
