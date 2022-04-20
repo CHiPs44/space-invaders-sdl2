@@ -28,11 +28,11 @@ void initDebug(void)
 void renderDebugText(void)
 {
     char buffer[256];
-    sprintf(buffer,
-            "S:%s D:%06.01f F:%06d M:%02d S:%03d D:%03d",
-            sceneName, sceneDuration / 1000.0, frames,
-            sceneDuration > 0 ? frames * 1000 / sceneDuration : 0,
-            speed, delay);
+    snprintf(buffer, 256,
+             "S:%s D:%06.01f F:%06d M:%02d S:%03d D:%03d",
+             sceneName, sceneDuration / 1000.0, frames,
+             sceneDuration > 0 ? frames * 1000 / sceneDuration : 0,
+             speed, delay);
     uint8_t i = 0;
     while (buffer[i])
     {

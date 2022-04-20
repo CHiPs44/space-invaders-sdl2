@@ -6,7 +6,7 @@
 Sprite *alien1 = NULL;
 Sprite *alien2 = NULL;
 Sprite *alien3 = NULL;
-Sprite *alienShots[] = {NULL, NULL, NULL};
+Sprite *alienShots[3] = {NULL, NULL, NULL};
 Alien aliens[ALIEN_LINES][ALIEN_COLUMNS];
 int alienDelay;
 int alienDown;

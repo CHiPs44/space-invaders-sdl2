@@ -37,7 +37,7 @@
 extern Sprite *alien1;
 extern Sprite *alien2;
 extern Sprite *alien3;
-Sprite *alienShots[];
+Sprite *alienShots[3];
 extern SDL_bool aliensFlag;
 
 typedef struct
