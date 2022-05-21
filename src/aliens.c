@@ -1,5 +1,4 @@
 #include "../include/aliens.h"
-#include "../include/const.h"
 #include "../include/graphics.h"
 #include "../include/scene.h"
 

@@ -1,5 +1,4 @@
 #include "../include/font.h"
-#include "../include/const.h"
 #include "../include/graphics.h"
 
 SDL_Texture *font = NULL;

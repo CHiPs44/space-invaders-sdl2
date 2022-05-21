@@ -1,5 +1,4 @@
 #include "../include/graphics.h"
-#include "../include/const.h"
 
 int zoom = 2;
 int offsetX;
