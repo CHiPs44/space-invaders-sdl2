@@ -20,7 +20,7 @@ void stopGraphics(int status, const char *message, const char *error)
     {
         fprintf(stderr, "%s: %s\n", message, error);
     }
-    if (NULL != message && NULL == error)
+    if (NULL != message)
     {
         fprintf(stderr, "%s\n", message);
     }
@@ -46,7 +46,7 @@ void initGraphics(void)
         stopGraphics(EXIT_FAILURE, "SDL_Init", SDL_GetError());
     }
     int width = WINDOW_WIDTH * zoom * 2;
-    int height = (WINDOW_HEIGHT/* + DEBUG_HEIGHT*/) * zoom;
+    int height = (WINDOW_HEIGHT /* + DEBUG_HEIGHT*/) * zoom;
     offsetX = (width - GAME_WIDTH * 2 * zoom) / 2;
     offsetY = (height - GAME_HEIGHT * zoom) / 2;
     char title[256];
@@ -70,7 +70,7 @@ void initGraphics(void)
     {
         stopGraphics(EXIT_FAILURE, "SDL_CreateRenderer", SDL_GetError());
     }
-    if (IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG)
+    if (0 == IMG_Init(IMG_INIT_PNG))
     {
         stopGraphics(EXIT_FAILURE, "IMG_Init", SDL_GetError());
     }

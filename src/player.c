@@ -18,7 +18,7 @@ void initPlayer(void)
     ship->rect.y = SHIP_Y;
     shoot = createSpriteFromFile("shoot.png", 1);
     shootExplosion = createSpriteFromFile("shoot-explosion.png", 1);
-    shootExplosion->rect.y = 4 * 8 - 8;
+    shootExplosion->rect.y = 5 * 8 - 8;
 }
 
 /**
@@ -39,9 +39,9 @@ void renderShoot(void)
     if (!shootVisible)
         return;
     if (shootExploding != 0L)
-        renderSprite(shoot);
-    else
         renderSprite(shootExplosion);
+    else
+        renderSprite(shoot);
 }
 
 // EOF

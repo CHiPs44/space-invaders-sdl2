@@ -42,6 +42,7 @@ SDL_bool manageEvent(void)
                 shootVisible = SDL_TRUE;
                 shoot->rect.x = ship->rect.x + SHIP_WIDTH / 2;
                 shoot->rect.y = ship->rect.y - shoot->rect.h;
+                shootExploding = 0L;
             }
             break;
         case SDLK_1:

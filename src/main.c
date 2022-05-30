@@ -43,9 +43,8 @@ int main(void /*int argc, char *argv[]*/)
     while (SDL_TRUE)
     {
         uint32_t renderBegin = SDL_GetTicks();
-        // Draw current scene
+        // Draw current scene, debug & screenshot
         renderScene();
-        // Draw debug & screenshot
         renderDebugText();
         renderScreenshot();
         // Helps debugging item positions

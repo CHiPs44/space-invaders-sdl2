@@ -12,9 +12,9 @@
 #include "../include/shields.h"
 #include "../include/saucer.h"
 
-int32_t speed = 16;
+int32_t speed = 12;
 int32_t delay;
-uint32_t fps = 25;
+uint32_t fps = 30;
 
 uint8_t scene = SCENE_NONE;
 char sceneName[16] = "";
@@ -277,20 +277,21 @@ void renderSceneGame(uint32_t ticks)
     // {
     //     // TODO
     // }
-    // Check if shoot can go up or explodes at top of screen
     if (shootVisible)
     {
+        // Check if shoot can go up or explodes at top of screen
         if (shootExploding != 0L && ticks > shootExploding)
         {
-            shootVisible = SDL_FALSE;
             shootExploding = 0L;
+            shootVisible = SDL_FALSE;
         }
         else
         {
             shoot->rect.y -= 1;
-            if (shoot->rect.y < 4 * 8)
+            if (shootExploding == 0L && shoot->rect.y < 5 * 8)
             {
-                shootExploding = ticks + 250;
+                shootExploding = ticks + 500L;
+                // fprintf(stderr, "X:%ul T:%ul\n", shootExploding, ticks);
                 shootExplosion->rect.x = shoot->rect.x - 4;
             }
         }
@@ -302,7 +303,7 @@ void renderSceneGame(uint32_t ticks)
         shoot->rect.x >= saucer->rect.x &&
         shoot->rect.x <= saucer->rect.x + SAUCER_WIDTH)
     {
-        saucerExploding = SDL_GetTicks() + 250;
+        saucerExploding = SDL_GetTicks() + 500L;
         scores[player] += 50; // TODO
     }
     // Check if alien touched by shoot
