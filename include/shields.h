@@ -8,7 +8,7 @@
 #define SHIELD_HEIGHT 16
 #define SHIELD_Y 192
 
-extern SDL_bool shieldsFlag;
+extern SDL_bool shieldsVisible;
 
 void initShields(void);
 void renderShields(void);

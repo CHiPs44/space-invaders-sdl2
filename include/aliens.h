@@ -37,8 +37,8 @@
 extern Sprite *alien1;
 extern Sprite *alien2;
 extern Sprite *alien3;
-Sprite *alienShots[3];
-extern SDL_bool aliensFlag;
+extern Sprite *alienShots[3];
+extern SDL_bool aliensVisible;
 
 typedef struct
 {
@@ -48,7 +48,7 @@ typedef struct
 } Alien;
 
 extern Alien aliens[ALIEN_LINES][ALIEN_COLUMNS];
-extern SDL_bool aliensFlag;
+extern SDL_bool aliensVisible;
 
 void initAliens(void);
 void resetAliens(void);

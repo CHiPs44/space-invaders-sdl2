@@ -36,7 +36,7 @@ void renderDebugText(void)
     uint8_t i = 0;
     while (buffer[i])
     {
-        renderChar(buffer[i], 1 + i, GAME_HEIGHT);
+        renderChar(buffer[i], 1 + i, GAME_HEIGHT + 8);
         i += 1;
     }
 }

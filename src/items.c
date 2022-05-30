@@ -9,8 +9,8 @@
 uint16_t scores[3] = {6789, 1010, 2020}; // HI, P1, P2
 uint8_t lives = 3;
 uint8_t credits = 9;
-SDL_bool lineFlag = SDL_FALSE;
-SDL_bool livesFlag = SDL_FALSE;
+SDL_bool lineVisible = SDL_FALSE;
+SDL_bool livesVisible = SDL_FALSE;
 
 /**
  * @brief Render player one, high, player two scores
@@ -40,7 +40,7 @@ void renderScores(void)
  */
 void renderLives(void)
 {
-    if (!livesFlag)
+    if (!livesVisible)
         return;
     renderChar('0' + lives, 1, 30 * 8);
     for (uint8_t i = 0; i < lives - 1; i += 1)
@@ -65,7 +65,7 @@ void renderCredits(void)
  */
 void renderLine(void)
 {
-    if (!lineFlag)
+    if (!lineVisible)
         return;
     SDL_Rect lineRect = {offsetX + 0 * zoom, offsetY + 239 * zoom, GAME_WIDTH * zoom, 1 * zoom};
     SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, SDL_ALPHA_OPAQUE);

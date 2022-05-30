@@ -11,8 +11,8 @@
 extern Sprite *ship;
 extern Sprite *shoot;
 extern Sprite *shootExplosion;
-extern SDL_bool shipFlag;
-extern SDL_bool shootFlag;
+extern SDL_bool shipVisible;
+extern SDL_bool shootVisible;
 extern uint8_t player; // current player 1..2
 extern int8_t shipDx; // -1..1
 extern uint32_t playerExploding; // end of exploding player

@@ -3,7 +3,7 @@
 #include "../include/graphics.h"
 
 Sprite *saucer = NULL;
-SDL_bool saucerFlag = SDL_FALSE;
+SDL_bool saucerVisible = SDL_FALSE;
 Uint32 saucerExploding = 0L;
 
 void initSaucer(void)
@@ -14,7 +14,7 @@ void initSaucer(void)
 
 void renderSaucer(void)
 {
-    if (!saucerFlag)
+    if (!saucerVisible)
         return;
     saucer->frame = 0;
     if (saucerExploding > 0)

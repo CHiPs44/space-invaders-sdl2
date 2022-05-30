@@ -46,41 +46,45 @@ void initScene(void)
  */
 void setScene(uint8_t newScene)
 {
-    lineFlag = SDL_FALSE;
-    livesFlag = SDL_FALSE;
-    shipFlag = SDL_FALSE;
-    shootFlag = SDL_FALSE;
-    aliensFlag = SDL_FALSE;
-    saucerFlag = SDL_FALSE;
-    shieldsFlag = SDL_FALSE;
+    lineVisible = SDL_FALSE;
+    livesVisible = SDL_FALSE;
+    shipVisible = SDL_FALSE;
+    shootVisible = SDL_FALSE;
+    aliensVisible = SDL_FALSE;
+    saucerVisible = SDL_FALSE;
+    shieldsVisible = SDL_FALSE;
 
     switch (newScene)
     {
     case SCENE_BOOT:
         // Display "garbage" on screen 0
-        strcpy(sceneName, "Boot");
+        strcpy(sceneName, "BOOT");
         break;
     case SCENE_HOME:
         // Display PLAY SPACE INVADERS, "instructions" & aliens points
-        strcpy(sceneName, "Home");
+        strcpy(sceneName, "HOME");
         break;
     case SCENE_PLAY:
         // Start 1 player game (for now)
-        strcpy(sceneName, "Play");
+        strcpy(sceneName, "PLAY");
         playMode = 1;
         player = 1;
         break;
     case SCENE_GAME:
         // Effectively play game
-        strcpy(sceneName, "Game");
+        strcpy(sceneName, "GAME");
         ship->rect.x = (GAME_WIDTH - SHIP_WIDTH) / 2;
         shipDx = 0;
         resetAliens();
-        lineFlag = SDL_TRUE;
-        livesFlag = SDL_TRUE;
-        shipFlag = SDL_TRUE;
-        aliensFlag = SDL_TRUE;
-        shieldsFlag = SDL_TRUE;
+        lineVisible = SDL_TRUE;
+        livesVisible = SDL_TRUE;
+        shipVisible = SDL_TRUE;
+        shipDx = 0;
+        aliensVisible = SDL_TRUE;
+        shieldsVisible = SDL_TRUE;
+        break;
+    case SCENE_OVER:
+        strcpy(sceneName, "OVER");
         break;
     default:
         strcpy(sceneName, "????");
@@ -122,8 +126,8 @@ void renderScene(void)
     //     return;
 
     // Clear screen to black
-    // SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
-    SDL_SetRenderDrawColor(renderer, 0x30, 0x30, 0x30, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
+    // SDL_SetRenderDrawColor(renderer, 0x30, 0x30, 0x30, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
     // renderText("\001\002\003\004\005", GAME_WIDTH / 8 - 5, GAME_HEIGHT - 8);
     // Render "always here" items, except in BOOT scene
@@ -247,17 +251,17 @@ void renderScenePlay(void)
 void renderSceneGame(uint32_t ticks)
 {
     // // TEST : activate saucer all the time
-    // if (!flagSaucer)
+    // if (!saucerVisible)
     // {
-    //     flagSaucer = SDL_TRUE;
+    //     saucerVisible = SDL_TRUE;
     //     saucer->rect.x = GAME_WIDTH + 1;
     // }
-    if (frameChanged && saucerFlag)
+    if (frameChanged && saucerVisible)
     {
         saucer->rect.x -= 1;
         if (saucer->rect.x <= -16)
         {
-            saucerFlag = SDL_FALSE;
+            saucerVisible = SDL_FALSE;
         }
     }
     // Check if ship can/has to move
@@ -268,17 +272,17 @@ void renderSceneGame(uint32_t ticks)
     {
         ship->rect.x += shipDx;
     }
-    // Check if ship touched by bombs
-    // if (flagBomb)
+    // Check if player's ship touched by bombs
+    // if (bombVisible)
     // {
     //     // TODO
     // }
-    // Check if shoot can go up
-    if (shootFlag)
+    // Check if shoot can go up or explodes at top of screen
+    if (shootVisible)
     {
         if (shootExploding != 0L && ticks > shootExploding)
         {
-            shootFlag = SDL_FALSE;
+            shootVisible = SDL_FALSE;
             shootExploding = 0L;
         }
         else
@@ -292,8 +296,8 @@ void renderSceneGame(uint32_t ticks)
         }
     }
     // Check if saucer touched by shoot
-    if (saucerFlag &&
-        shootFlag &&
+    if (saucerVisible &&
+        shootVisible &&
         shoot->rect.y <= SAUCER_Y + SAUCER_HEIGHT &&
         shoot->rect.x >= saucer->rect.x &&
         shoot->rect.x <= saucer->rect.x + SAUCER_WIDTH)
@@ -302,7 +306,7 @@ void renderSceneGame(uint32_t ticks)
         scores[player] += 50; // TODO
     }
     // Check if alien touched by shoot
-    if (shootFlag)
+    if (shootVisible)
     {
         // TODO
     }

@@ -4,7 +4,7 @@
 
 #define EVENT_H
 
-extern SDL_Event event;
+// extern SDL_Event event;
 
 SDL_bool manageEvent(void);
 

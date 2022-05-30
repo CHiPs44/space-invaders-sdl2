@@ -5,8 +5,8 @@
 Sprite *ship = NULL;
 Sprite *shoot = NULL;
 Sprite *shootExplosion = NULL;
-SDL_bool shipFlag = SDL_FALSE;
-SDL_bool shootFlag = SDL_FALSE;
+SDL_bool shipVisible = SDL_FALSE;
+SDL_bool shootVisible = SDL_FALSE;
 uint8_t player = 0;
 int8_t shipDx = 0;
 uint32_t playerExploding = 0L;
@@ -26,7 +26,7 @@ void initPlayer(void)
  */
 void renderShip(void)
 {
-    if (!shipFlag)
+    if (!shipVisible)
         return;
     renderSprite(ship);
 }
@@ -36,7 +36,7 @@ void renderShip(void)
  */
 void renderShoot(void)
 {
-    if (!shootFlag)
+    if (!shootVisible)
         return;
     if (shootExploding != 0L)
         renderSprite(shoot);

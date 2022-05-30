@@ -2,7 +2,7 @@
 #include "../include/graphics.h"
 #include "../include/sprite.h"
 
-SDL_bool shieldsFlag = SDL_FALSE;
+SDL_bool shieldsVisible = SDL_FALSE;
 Sprite *shields[4] = {NULL, NULL, NULL, NULL};
 
 void initShields(void)
@@ -20,7 +20,7 @@ void initShields(void)
 
 void renderShields(void)
 {
-    if (!shieldsFlag)
+    if (!shieldsVisible)
         return;
     for (int i = 0; i < 4; i += 1)
     {

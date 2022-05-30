@@ -10,13 +10,13 @@
 #include "../include/scene.h"
 #include "../include/sprite.h"
 
-SDL_Event event;
-
 SDL_bool manageEvent(void)
 {
+    SDL_Event event;
     SDL_bool stop = SDL_FALSE;
 
-    SDL_PollEvent(&event);
+    if (SDL_PollEvent(&event) == 0)
+        return SDL_FALSE;
     switch (event.type)
     {
     case SDL_QUIT:
@@ -29,19 +29,19 @@ SDL_bool manageEvent(void)
             stop = SDL_TRUE;
             break;
         case SDLK_LEFT:
-            if (shipFlag)
+            if (shipVisible)
                 shipDx = -1;
             break;
         case SDLK_RIGHT:
-            if (shipFlag)
+            if (shipVisible)
                 shipDx = 1;
             break;
         case SDLK_SPACE:
-            if (shipFlag && !shootFlag)
+            if (shipVisible && !shootVisible)
             {
-                shootFlag = SDL_TRUE;
+                shootVisible = SDL_TRUE;
                 shoot->rect.x = ship->rect.x + SHIP_WIDTH / 2;
-                shoot->rect.y = ship->rect.y - shoot->rect.w;
+                shoot->rect.y = ship->rect.y - shoot->rect.h;
             }
             break;
         case SDLK_1:
@@ -49,6 +49,12 @@ SDL_bool manageEvent(void)
             {
                 setScene(SCENE_PLAY);
                 credits -= 1;
+            }
+            break;
+        case SDLK_c:
+            if (credits < 99)
+            {
+                credits += 1;
             }
             break;
         case SDLK_r:
@@ -82,11 +88,11 @@ SDL_bool manageEvent(void)
         switch (event.key.keysym.sym)
         {
         case SDLK_LEFT:
-            if (shipFlag && shipDx < 0)
+            if (shipVisible && shipDx < 0)
                 shipDx = 0;
             break;
         case SDLK_RIGHT:
-            if (shipFlag && shipDx > 0)
+            if (shipVisible && shipDx > 0)
                 shipDx = 0;
             break;
         default:

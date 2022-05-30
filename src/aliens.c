@@ -13,7 +13,7 @@ int alienAccel;
 int alienNextMove = 0L;
 int alienDx = 0;
 int alienDy = 0;
-SDL_bool aliensFlag = SDL_FALSE;
+SDL_bool aliensVisible = SDL_FALSE;
 
 /**
  * @brief Initialize aliens sprites
@@ -146,7 +146,7 @@ void moveAliens(void)
 
 void renderAliens(void)
 {
-    if (!aliensFlag)
+    if (!aliensVisible)
         return;
     for (int line = 0; line < ALIEN_LINES; line += 1)
     {

@@ -13,6 +13,7 @@
 #define SCENE_HOME 2
 #define SCENE_PLAY 3
 #define SCENE_GAME 4
+#define SCENE_OVER 5
 
 extern int32_t speed;
 extern int32_t delay;
