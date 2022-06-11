@@ -28,14 +28,14 @@ void renderShields(void)
     }
 }
 
-void shootAtShield(int bombType, uint8_t x)
+void shootAtShield(int bombType, uint8_t x, uint8_t y)
 {
     int foo = bombType;
-    foo += x;
+    foo += x + y;
     // TODO check if shield touched and destroy some pixels in the texture
     // bombType:
-    //  0=>player shoot
-    //  1..3=> alien bombs
+    //  0    => player shoot
+    //  1..3 => alien bombs
 }
 
 // EOF

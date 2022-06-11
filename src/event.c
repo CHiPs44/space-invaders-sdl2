@@ -62,7 +62,8 @@ SDL_bool manageEvent(void)
             setScene(SCENE_BOOT);
             break;
         case SDLK_KP_ENTER:
-            screenshot = (screenshot + 1) % 3;
+            if (screenshotVisible)
+                screenshot = (screenshot + 1) % 3;
             break;
         case SDLK_KP_PLUS:
             speed += 1;
@@ -79,10 +80,16 @@ SDL_bool manageEvent(void)
             }
             break;
         case SDLK_g:
-            grid = grid ? SDL_FALSE : SDL_TRUE;
+            gridVisible = gridVisible ? SDL_FALSE : SDL_TRUE;
             break;
         case SDLK_d:
             debugVisible = debugVisible ? SDL_FALSE : SDL_TRUE;
+            break;
+        case SDLK_s:
+            screenshotVisible = screenshotVisible ? SDL_FALSE : SDL_TRUE;
+            stopGraphics(STATUS_RESET, NULL, NULL);
+            initGraphics();
+            setScene(SCENE_BOOT);
             break;
         default:
             break;

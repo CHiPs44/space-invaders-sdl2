@@ -5,17 +5,26 @@
 - <https://blog.loadzero.com/blog/si78c/> / <https://github.com/loadzero/si78c>
 - <https://computerarcheology.com/Arcade/SpaceInvaders/Code.html>
 
-## How to build
+## Getting started
 
-### Installing tools & dependencies
+### Install tools & dependencies
 
 ```bash
 sudo apt install build-essentials cmake libsdl2-dev libsdl2-image-dev
 ```
 
-### Building the game itself from project's root
+### Initialize the local repository
 
 ```bash
+cd <source-root>
+git clone <project>
+git submodule init
+```
+
+### Build the game
+
+```bash
+cd <project-root>
 mkdir build
 cd build
 cmake ..
@@ -54,27 +63,29 @@ ln -s ../assets assets
 | [enter (numpad)] | change screenshot |
 | [g] | toogle grid |
 | [d] | toogle debug |
-| [s] | toogle screenshots |
+| [s] | toogle screenshots (WIP/KO) |
 
 ## TODO
 
-- [X] debug player fire
-- [X] hide/show debug
-- [_] hide/show screenshots (SDL window reset)
-- [_] aliens kills
-- [_] alien bombs
-- [_] ship kill
-- [_] alien victory
-- [_] player victory & next level (level counter?)
-- [_] shield demolition (by player & aliens)
-- [_] saucer management (frequency & score)
-- [_] high score load / save
-- [_] 2 player game
-- [_] sounds (background, fire, bombs?, kills, saucer, ...)
-- [_] credits (scene or pop-up with semi-graphic chars)?
-- [_] animations from original game on home scren?
-- [_] backgrounds/borders arounds 4/3 screen?
-- [_] buttons + mouse for commands / settings?
-- [_] ...
+- [x] debug player fire
+- [x] hide/show debug
+- [ ] hide/show screenshots (SDL window & renderer reset)
+- [ ] aliens kills
+- [ ] alien bombs
+- [ ] ship kill
+- [ ] alien victory
+- [ ] player victory & next level (level counter?)
+- [ ] shield demolition (by player & aliens)
+- [ ] saucer management (frequency & score)
+- [ ] high score load / save
+- [ ] 2 player game
+- [ ] sounds (background, fire, bombs?, kills, saucer, ...)
+- [ ] credits (scene or pop-up with semi-graphic chars)?
+- [ ] animations from original game on home scren?
+- [ ] backgrounds/borders arounds 4/3 screen?
+- [ ] buttons + mouse for commands / settings?
+- [ ] horizontal color stripes (adhesive tape style)
+- [ ] fullscreen mode?
+- [ ] DEB/RPM packages (with OpenSUSE build service)?
 
 `EOF`

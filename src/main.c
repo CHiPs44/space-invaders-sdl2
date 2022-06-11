@@ -28,18 +28,14 @@
 int main(void /*int argc, char *argv[]*/)
 {
     initGraphics();
-
-    // Load assets
     initAliens();
     initDebug();
     initFont();
     initPlayer();
     initSaucer();
     initShields();
-
     initScene();
     setScene(SCENE_BOOT);
-
     while (SDL_TRUE)
     {
         uint32_t renderBegin = SDL_GetTicks();
@@ -47,7 +43,6 @@ int main(void /*int argc, char *argv[]*/)
         renderScene();
         renderDebugText();
         renderScreenshot();
-        // Helps debugging item positions
         renderGrid();
         // Render complete screen
         SDL_RenderPresent(renderer);
@@ -65,7 +60,6 @@ int main(void /*int argc, char *argv[]*/)
         // uint32_t frameEnd = SDL_GetTicks();
         // uint32_t frameDuration = frameEnd - frameBegin;
     }
-
     // Fin des haricots
     stopGraphics(EXIT_SUCCESS, NULL, NULL);
 }

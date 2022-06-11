@@ -1,4 +1,5 @@
 #include "../include/graphics.h"
+#include "../include/debug.h"
 
 int zoom = 2;
 int offsetX;
@@ -45,14 +46,15 @@ void initGraphics(void)
     {
         stopGraphics(EXIT_FAILURE, "SDL_Init", SDL_GetError());
     }
-    int width = WINDOW_WIDTH * zoom * 2;
-    int height = (WINDOW_HEIGHT /* + DEBUG_HEIGHT*/) * zoom;
-    offsetX = (width - GAME_WIDTH * 2 * zoom) / 2;
+    int factor = screenshotVisible ? 2 : 1;
+    int width = WINDOW_WIDTH * zoom * factor;
+    int height = WINDOW_HEIGHT * zoom;
+    offsetX = (width - GAME_WIDTH * factor * zoom) / 2;
     offsetY = (height - GAME_HEIGHT * zoom) / 2;
     char title[256];
     snprintf(
         title, 256,
-        "Space Invaders 1978 (%dx%dx%d) (%d+%dx%d+%d)",
+        "Space Invaders 1978 (%dx%dx%d=>%d+%dx%d+%d)",
         GAME_WIDTH, GAME_HEIGHT, zoom,
         width, offsetX, height, offsetY);
     window = SDL_CreateWindow(

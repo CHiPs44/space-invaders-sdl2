@@ -12,7 +12,7 @@ extern SDL_bool shieldsVisible;
 
 void initShields(void);
 void renderShields(void);
-void shootAtShield(int bombType, uint8_t x);
+void shootAtShield(int bombType, uint8_t x, uint8_t y);
 
 #endif
 
