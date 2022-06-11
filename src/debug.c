@@ -11,6 +11,7 @@
 SDL_Texture *screenshots[3];
 uint8_t screenshot = 2;
 SDL_bool grid = SDL_FALSE;
+SDL_bool debugVisible = SDL_TRUE;
 
 void initDebug(void)
 {
@@ -27,6 +28,8 @@ void initDebug(void)
  */
 void renderDebugText(void)
 {
+    if (!debugVisible)
+        return;
     char buffer[256];
     snprintf(buffer, 256,
              "S:%s D:%06.01f F:%06d M:%02d S:%03d D:%03d",

@@ -7,6 +7,7 @@
 extern SDL_Texture *screenshots[3];
 extern uint8_t screenshot;
 extern SDL_bool grid;
+extern SDL_bool debugVisible;
 
 void initDebug(void);
 void renderDebugText(void);

@@ -79,7 +79,10 @@ SDL_bool manageEvent(void)
             }
             break;
         case SDLK_g:
-            grid = 1 - grid;
+            grid = grid ? SDL_FALSE : SDL_TRUE;
+            break;
+        case SDLK_d:
+            debugVisible = debugVisible ? SDL_FALSE : SDL_TRUE;
             break;
         default:
             break;

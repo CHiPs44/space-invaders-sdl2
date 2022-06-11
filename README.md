@@ -39,7 +39,6 @@ ln -s ../assets assets
 
 ## Keys
 
-
 | Key | Description  |
 | --: | :----------- |
 | [1] | start 1 player game|
@@ -53,14 +52,15 @@ ln -s ../assets assets
 | [+ (numpad)] |increase speed |
 | [- (numpad)] |decrease speed |
 | [enter (numpad)] | change screenshot |
-| [g] |toogle grid |
-| [d] |toogle debug (TODO) |
+| [g] | toogle grid |
+| [d] | toogle debug |
+| [s] | toogle screenshots |
 
 ## TODO
 
 - [X] debug player fire
-- [_] hide/show debug
-- [_] hide/show screenshots
+- [X] hide/show debug
+- [_] hide/show screenshots (SDL window reset)
 - [_] aliens kills
 - [_] alien bombs
 - [_] ship kill
