@@ -87,9 +87,9 @@ SDL_bool manageEvent(void)
             break;
         case SDLK_s:
             screenshotVisible = screenshotVisible ? SDL_FALSE : SDL_TRUE;
-            stopGraphics(STATUS_RESET, NULL, NULL);
-            initGraphics();
-            setScene(SCENE_BOOT);
+            // stopGraphics(STATUS_RESET, NULL, NULL);
+            resizeGraphics();
+            // setScene(SCENE_BOOT);
             break;
         default:
             break;

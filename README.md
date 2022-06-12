@@ -60,16 +60,16 @@ ln -s ../assets assets
 | [r] | restart to boot scene |
 | [+ (numpad)] |increase speed |
 | [- (numpad)] |decrease speed |
-| [enter (numpad)] | change screenshot |
 | [g] | toogle grid |
 | [d] | toogle debug |
-| [s] | toogle screenshots (WIP/KO) |
+| [s] | toogle screenshots |
+| [enter (numpad)] | change screenshot |
 
 ## TODO
 
 - [x] debug player fire
 - [x] hide/show debug
-- [ ] hide/show screenshots (SDL window & renderer reset)
+- [x] hide/show screenshots
 - [ ] aliens kills
 - [ ] alien bombs
 - [ ] ship kill

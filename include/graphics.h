@@ -27,6 +27,7 @@ extern SDL_Renderer *renderer;
 
 void stopGraphics(int status, const char *message, const char *error);
 void initGraphics(void);
+void resizeGraphics(void);
 
 #endif
 

@@ -46,35 +46,51 @@ void initGraphics(void)
     {
         stopGraphics(EXIT_FAILURE, "SDL_Init", SDL_GetError());
     }
+    if (0 == IMG_Init(IMG_INIT_PNG))
+    {
+        stopGraphics(EXIT_FAILURE, "IMG_Init", SDL_GetError());
+    }
+    resizeGraphics();
+}
+
+void resizeGraphics(void)
+{
     int factor = screenshotVisible ? 2 : 1;
     int width = WINDOW_WIDTH * zoom * factor;
     int height = WINDOW_HEIGHT * zoom;
     offsetX = (width - GAME_WIDTH * factor * zoom) / 2;
     offsetY = (height - GAME_HEIGHT * zoom) / 2;
-    char title[256];
-    snprintf(
-        title, 256,
-        "Space Invaders 1978 (%dx%dx%d=>%d+%dx%d+%d)",
-        GAME_WIDTH, GAME_HEIGHT, zoom,
-        width, offsetX, height, offsetY);
-    window = SDL_CreateWindow(
-        title,
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
-        width, height,
-        SDL_WINDOW_SHOWN);
     if (NULL == window)
     {
-        stopGraphics(EXIT_FAILURE, "SDL_CreateWindow", SDL_GetError());
+        char title[256];
+        snprintf(
+            title, 256,
+            "Space Invaders 1978 (%dx%dx%d=>%d+%dx%d+%d)",
+            GAME_WIDTH, GAME_HEIGHT, zoom,
+            width, offsetX, height, offsetY);
+        window = SDL_CreateWindow(
+            title,
+            SDL_WINDOWPOS_CENTERED,
+            SDL_WINDOWPOS_CENTERED,
+            width, height,
+            SDL_WINDOW_SHOWN);
+        if (NULL == window)
+        {
+            stopGraphics(EXIT_FAILURE, "SDL_CreateWindow", SDL_GetError());
+        }
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); // | SDL_RENDERER_PRESENTVSYNC);
+        if (NULL == renderer)
+        {
+            stopGraphics(EXIT_FAILURE, "SDL_CreateRenderer", SDL_GetError());
+        }
     }
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); // | SDL_RENDERER_PRESENTVSYNC);
-    if (NULL == renderer)
+    else
     {
-        stopGraphics(EXIT_FAILURE, "SDL_CreateRenderer", SDL_GetError());
-    }
-    if (0 == IMG_Init(IMG_INIT_PNG))
-    {
-        stopGraphics(EXIT_FAILURE, "IMG_Init", SDL_GetError());
+        SDL_SetWindowSize(window, width, height);
+        SDL_SetWindowPosition(
+            window,
+            SDL_WINDOWPOS_CENTERED,
+            SDL_WINDOWPOS_CENTERED);
     }
 }
 
