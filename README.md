@@ -6,6 +6,7 @@ Original Space Invaders from 1978:
 
 - emulated with original ROM files: <https://blog.loadzero.com/blog/si78c/> / <https://github.com/loadzero/si78c>
 - original Z80 source code with comments: <https://computerarcheology.com/Arcade/SpaceInvaders/Code.html>
+- another emulation with ROM files: https://github.com/superzazu/invaders
 
 Screenshots where taken from the amazing Javascript "video" player embedded in loadzero's website.
 
@@ -99,6 +100,7 @@ ln -s ../assets assets
 
 ### Ideas
 
+- [ ] function keys instead of 1, 2 and others?
 - [ ] level counter?
 - [ ] pause game?
 - [ ] credits (scene or pop-up with semi-graphic chars)?
