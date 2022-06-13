@@ -16,6 +16,8 @@ Graphical assets were drawn manually with GIMP, Pinta and Drawing, neither of th
 
 ### Install tools & dependencies
 
+With Ubuntu 22.04 / 20.04 (should work with other Debian derivatives, too):
+
 ```bash
 sudo apt install build-essentials cmake libsdl2-dev libsdl2-image-dev
 ```
@@ -27,6 +29,8 @@ cd <source-root>
 git clone <project>
 git submodule init
 ```
+
+NB: thanks to <https://gitlab.com/aminosbh/sdl2-cmake-modules> for the SDL2 cmake integration!
 
 ### Build the game
 
