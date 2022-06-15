@@ -19,7 +19,7 @@ Graphical assets were drawn manually with GIMP, Pinta and Drawing, neither of th
 With Ubuntu 22.04 / 20.04 (should work with other Debian derivatives, too):
 
 ```bash
-sudo apt install build-essentials cmake libsdl2-dev libsdl2-image-dev
+sudo apt install git build-essential cmake libsdl2-dev libsdl2-image-dev
 ```
 
 ### Initialize the local repository
