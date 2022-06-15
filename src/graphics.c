@@ -2,6 +2,9 @@
 #include "../include/debug.h"
 
 int zoom = 2;
+int widthFactor;
+int windowWidth;
+int windowHeight;
 int offsetX;
 int offsetY;
 SDL_Window *window = NULL;
@@ -55,11 +58,11 @@ void initGraphics(void)
 
 void resizeGraphics(void)
 {
-    int factor = screenshotVisible ? 2 : 1;
-    int width = WINDOW_WIDTH * zoom * factor;
-    int height = WINDOW_HEIGHT * zoom;
-    offsetX = (width - GAME_WIDTH * factor * zoom) / 2;
-    offsetY = (height - GAME_HEIGHT * zoom) / 2;
+    widthFactor = screenshotVisible ? 2 : 1;
+    windowWidth = WINDOW_WIDTH * zoom * widthFactor;
+    windowHeight = WINDOW_HEIGHT * zoom;
+    offsetX = (windowWidth - GAME_WIDTH * widthFactor * zoom) / 2;
+    offsetY = (windowHeight - GAME_HEIGHT * zoom) / 2;
     if (NULL == window)
     {
         char title[256];
@@ -67,12 +70,12 @@ void resizeGraphics(void)
             title, 256,
             "Space Invaders 1978 (%dx%dx%d=>%d+%dx%d+%d)",
             GAME_WIDTH, GAME_HEIGHT, zoom,
-            width, offsetX, height, offsetY);
+            windowWidth, offsetX, windowHeight, offsetY);
         window = SDL_CreateWindow(
             title,
             SDL_WINDOWPOS_CENTERED,
             SDL_WINDOWPOS_CENTERED,
-            width, height,
+            windowWidth, windowHeight,
             SDL_WINDOW_SHOWN);
         if (NULL == window)
         {
@@ -86,7 +89,7 @@ void resizeGraphics(void)
     }
     else
     {
-        SDL_SetWindowSize(window, width, height);
+        SDL_SetWindowSize(window, windowWidth, windowHeight);
         SDL_SetWindowPosition(
             window,
             SDL_WINDOWPOS_CENTERED,

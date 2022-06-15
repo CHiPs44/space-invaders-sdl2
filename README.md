@@ -28,6 +28,7 @@ sudo apt install git build-essential cmake libsdl2-dev libsdl2-image-dev
 cd <source-root>
 git clone <project>
 git submodule init
+git submodule update
 ```
 
 NB: thanks to <https://gitlab.com/aminosbh/sdl2-cmake-modules> for the SDL2 cmake integration!
@@ -56,6 +57,7 @@ ln -s ../assets assets
 - `[PLAY]` intro for player 1 or 2
 - `[GAME]` game itself for player 1 or 2
 - `[OVER]` player(s) loose (TODO)
+- `[NEXT]` next level for player 1 or 2 (TODO)
 
 ## Keys
 
@@ -86,21 +88,23 @@ ln -s ../assets assets
 
 ### Game
 
-- [x] player move
-- [x] player fire
-- [x] aliens move
-- [ ] aliens kills
-- [ ] alien bombs
-- [ ] player kill by bombs
-- [ ] alien victory
-- [ ] player victory & next level
-- [ ] shield demolition (by player & aliens)
-- [ ] saucer management (frequency & score)
+- [x] player move [GAME]
+- [x] player fire [GAME]
+- [x] aliens move [GAME]
+- [ ] aliens kills [GAME]
+- [ ] alien bombs [GAME]
+- [ ] player kill by bombs [GAME]
+- [ ] alien victory [GAME]
+- [ ] player victory [GAME]
+- [ ] shield demolition (by player & aliens) [GAME]
+- [ ] saucer management (frequency & score) [GAME]
+- [ ] sounds (background, fire, bombs (?), kills/explosions, saucer, ...) [GAME]
+- [ ] next level after victory [NEXT]
 - [ ] 2 player game
-- [ ] sounds (background, fire, bombs (?), kills/explosions, saucer, ...)
 - [ ] horizontal color stripes (adhesive tape style)
 - [ ] high score load / save
-- [ ] animations from original game on home screen
+- [ ] flash 0000 score for 1+ seconds on [PLAY] scene
+- [ ] animations from original game on home screen [HOME]
 
 ### Ideas
 

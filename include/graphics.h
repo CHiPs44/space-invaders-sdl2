@@ -20,6 +20,9 @@
 #define WITH_SCREENSHOTS SDL_TRUE
 
 extern int zoom;
+extern int widthFactor;
+extern int windowWidth;
+extern int windowHeight;
 extern int offsetX;
 extern int offsetY;
 extern SDL_Window *window;

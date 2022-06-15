@@ -32,7 +32,7 @@ void renderDebugLine(int line, char *buffer)
     uint8_t i = 0;
     while (buffer[i])
     {
-        renderChar(buffer[i], 1 + i, GAME_HEIGHT + 8 * line);
+        renderChar(buffer[i], 1 + i, GAME_HEIGHT + 8 + 8 * line);
         i += 1;
     }
 }

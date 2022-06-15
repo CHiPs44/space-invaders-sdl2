@@ -27,7 +27,7 @@ void renderChar(char c, uint8_t column, uint16_t y)
     // 2  !"#$%&'()*+,-./0123456789:;<=>?
     // 4 @ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_
     // 6 `abcdefghijklmnopqrstuvwxyz{|}~
-    if (c < 0 || column > 2 * GAME_WIDTH / 8 - 1 || y > (GAME_HEIGHT + 16 - 1))
+    if (c < 0 || column > 2 * GAME_WIDTH / 8 - 1 || y > (GAME_HEIGHT + 24 - 1))
     {
         fprintf(stderr, "renderChar: %c %d %d : char or position out of range!\r\n", c, column, y);
         return;
