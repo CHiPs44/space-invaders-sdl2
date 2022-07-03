@@ -14,7 +14,7 @@
 
 int32_t speed = 12;
 int32_t delay;
-uint32_t fps = 30;
+uint32_t fps = 60;
 
 uint8_t scene = SCENE_NONE;
 char sceneName[16] = "";
@@ -122,14 +122,14 @@ void renderScene(void)
     {
         frameChanged = SDL_FALSE;
     }
-    // if (!frameChanged)
-    //     return;
+    if (!frameChanged)
+        return;
 
     // Clear screen to black
     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
     // Fill borders
-    SDL_SetRenderDrawColor(renderer, 0x80, 0x80, 0x80, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderDrawColor(renderer, 0xff, 0x00, 0xff, SDL_ALPHA_OPAQUE);
     SDL_Rect top = {
         0,
         0,
