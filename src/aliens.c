@@ -1,6 +1,8 @@
 #include "../include/aliens.h"
 #include "../include/graphics.h"
+#include "../include/player.h"
 #include "../include/scene.h"
+#include "../include/sprite.h"
 
 Sprite *alien1 = NULL;
 Sprite *alien2 = NULL;
@@ -33,10 +35,10 @@ void initAliens(void)
  */
 void resetAliens(void)
 {
-    for (int line = 0; line < ALIEN_LINES; line += 1)
+    for (uint8_t line = 0; line < ALIEN_LINES; line += 1)
     {
         int y = ALIEN_START_Y + ALIEN_GRID_Y * line;
-        for (int column = 0; column < ALIEN_COLUMNS; column += 1)
+        for (uint8_t column = 0; column < ALIEN_COLUMNS; column += 1)
         {
             int x = ALIEN_START_X + ALIEN_GRID_X * column;
             SDL_Texture *texture;
@@ -69,6 +71,7 @@ void resetAliens(void)
             alien.state = ALIEN_IS_ALIVE;
             alien.sprite->rect.x = x;
             alien.sprite->rect.y = y;
+            alien.explosionTicks = 0L;
             aliens[line][column] = alien;
         }
     }
@@ -85,26 +88,26 @@ void resetAliens(void)
  */
 void moveAliens(void)
 {
-    int now = SDL_GetTicks();
+    int ticks = SDL_GetTicks();
     if (alienNextMove == 0L)
     {
         // Start move
-        alienNextMove = now + alienDelay;
+        alienNextMove = ticks + alienDelay;
     }
-    else if (now < alienNextMove)
+    else if (ticks < alienNextMove)
     {
         // Wait until next move
         return;
     }
     // Set next move
-    alienNextMove = now + alienDelay;
+    alienNextMove = ticks + alienDelay;
     int minX = GAME_WIDTH;
     int maxX = 0;
     int maxY = 0;
     int aliveCount = 0;
-    for (int line = 0; line < ALIEN_LINES; line += 1)
+    for (uint8_t line = 0; line < ALIEN_LINES; line += 1)
     {
-        for (int column = 0; column < ALIEN_COLUMNS; column += 1)
+        for (uint8_t column = 0; column < ALIEN_COLUMNS; column += 1)
         {
             Alien *alien = &aliens[line][column];
             if (alien->state == ALIEN_IS_ALIVE)
@@ -123,14 +126,15 @@ void moveAliens(void)
                 maxY = alien->sprite->rect.y + ALIEN1_HEIGHT > maxY
                            ? alien->sprite->rect.y + ALIEN1_HEIGHT
                            : maxY;
-            } else if (alien->state == ALIEN_IS_EXPLODING)
+            }
+            else if (alien->state == ALIEN_IS_EXPLODING)
             {
                 alien->sprite->frame = 2;
             }
         }
     }
+    // Reached left or right border?
     alienDy = 0;
-    
     if ((alienDx == -1 && minX < 8) || (alienDx == 1 && maxX > GAME_WIDTH - 8))
     {
         alienDx = -alienDx;
@@ -139,26 +143,59 @@ void moveAliens(void)
         if (alienDown > 8)
         {
             alienDelay -= alienAccel;
+            if (alienDelay < 0)
+                alienDelay = 0;
             alienDown = 0;
         }
     }
 }
 
-void renderAliens(void)
+void renderAliens(uint32_t ticks)
 {
     if (!aliensVisible)
         return;
-    for (int line = 0; line < ALIEN_LINES; line += 1)
+    for (uint8_t line = 0; line < ALIEN_LINES; line += 1)
     {
-        for (int column = 0; column < ALIEN_COLUMNS; column += 1)
+        for (uint8_t column = 0; column < ALIEN_COLUMNS; column += 1)
         {
             Alien *alien = &aliens[line][column];
+            if (alien->state == ALIEN_IS_EXPLODING)
+            {
+                if (ticks > alien->explosionTicks)
+                {
+                    alien->state = ALIEN_IS_DEAD;
+                    alien->explosionTicks = 0L;
+                } else {
+                    
+                }
+            }
             if (alien->state != ALIEN_IS_DEAD)
             {
                 renderSprite(alien->sprite);
             }
         }
     }
+}
+
+SDL_bool shootAtAliens(uint32_t ticks)
+{
+    for (uint8_t line = 0; line < ALIEN_LINES; line += 1)
+    {
+        for (uint8_t column = 0; column < ALIEN_COLUMNS; column += 1)
+        {
+            Alien *alien = &aliens[line][column];
+            if (alien->state != ALIEN_IS_DEAD)
+            {
+                if (isIntersectingSprite(&shoot->rect, &alien->sprite->rect))
+                {
+                    alien->state = ALIEN_IS_EXPLODING;
+                    alien->explosionTicks = ticks + 500L;
+                    return SDL_TRUE;
+                }
+            }
+        }
+    }
+    return SDL_FALSE;
 }
 
 // EOF

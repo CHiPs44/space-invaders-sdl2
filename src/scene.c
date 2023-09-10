@@ -28,7 +28,6 @@ uint8_t playMode; // 1=1 player, 2=2 players
 
 void initScene(void)
 {
-    // scene = SCENE_NONE;
     strcpy(sceneName, "");
     sceneStart = 0L;
     sceneDuration = 0L;
@@ -53,7 +52,6 @@ void setScene(uint8_t newScene)
     aliensVisible = SDL_FALSE;
     saucerVisible = SDL_FALSE;
     shieldsVisible = SDL_FALSE;
-
     switch (newScene)
     {
     case SCENE_BOOT:
@@ -118,44 +116,23 @@ void renderScene(void)
         frames += 1;
         frameChanged = SDL_TRUE;
     }
-    else
-    {
-        frameChanged = SDL_FALSE;
-    }
     if (!frameChanged)
         return;
-
     // Clear screen to black
     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
     // Fill borders
     SDL_SetRenderDrawColor(renderer, 0xff, 0x00, 0xff, SDL_ALPHA_OPAQUE);
-    SDL_Rect top = {
-        0,
-        0,
-        windowWidth,
-        offsetY - 1};
+    SDL_Rect top = {0, 0, windowWidth, offsetY - 1};
     SDL_RenderFillRect(renderer, &top);
     SDL_SetRenderDrawColor(renderer, 0xff, 0x00, 0x00, SDL_ALPHA_OPAQUE);
-    SDL_Rect bottom = {
-        0,
-        windowHeight - offsetY,
-        windowWidth,
-        offsetY};
+    SDL_Rect bottom = {0, windowHeight - offsetY, windowWidth, offsetY};
     SDL_RenderFillRect(renderer, &bottom);
     SDL_SetRenderDrawColor(renderer, 0x00, 0xff, 0x00, SDL_ALPHA_OPAQUE);
-    SDL_Rect left = {
-        0,
-        offsetY - 1,
-        offsetX - 1,
-        windowHeight - 2 * offsetY};
+    SDL_Rect left = {0, offsetY - 1, offsetX - 1, windowHeight - 2 * offsetY};
     SDL_RenderFillRect(renderer, &left);
     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, SDL_ALPHA_OPAQUE);
-    SDL_Rect right = {
-        windowWidth - offsetX,
-        offsetY - 1,
-        offsetX - 1,
-        windowHeight - 2 * offsetY};
+    SDL_Rect right = {windowWidth - offsetX, offsetY - 1, offsetX - 1, windowHeight - 2 * offsetY};
     SDL_RenderFillRect(renderer, &right);
     // Render "always here" items, except in BOOT scene
     if (scene != SCENE_BOOT)
@@ -164,7 +141,6 @@ void renderScene(void)
         renderLives();
         renderCredits();
     }
-
     switch (scene)
     {
     case SCENE_BOOT:
@@ -182,11 +158,10 @@ void renderScene(void)
     default:
         break;
     }
-
     // Render conditional elements
     renderShip();
     renderShoot();
-    renderAliens();
+    renderAliens(ticks);
     renderSaucer();
     renderShields();
     renderLine();
@@ -318,7 +293,6 @@ void renderSceneGame(uint32_t ticks)
             if (shootExploding == 0L && shoot->rect.y < 5 * 8)
             {
                 shootExploding = ticks + 500L;
-                // fprintf(stderr, "X:%ul T:%ul\n", shootExploding, ticks);
                 shootExplosion->rect.x = shoot->rect.x - 4;
             }
         }
@@ -326,17 +300,19 @@ void renderSceneGame(uint32_t ticks)
     // Check if saucer touched by shoot
     if (saucerVisible &&
         shootVisible &&
-        shoot->rect.y <= SAUCER_Y + SAUCER_HEIGHT &&
+        isIntersectingSprite(&shoot->rect, &saucer->rect)
+        /*shoot->rect.y <= SAUCER_Y + SAUCER_HEIGHT &&
         shoot->rect.x >= saucer->rect.x &&
-        shoot->rect.x <= saucer->rect.x + SAUCER_WIDTH)
+        shoot->rect.x <= saucer->rect.x + SAUCER_WIDTH*/
+    )
     {
-        saucerExploding = SDL_GetTicks() + 500L;
+        saucerExploding = ticks + 500L;
         scores[player] += 50; // TODO
     }
     // Check if alien touched by shoot
     if (shootVisible)
     {
-        // TODO
+        shootAtAliens(ticks);
     }
     // Move aliens
     moveAliens();

@@ -19,11 +19,12 @@ typedef struct
     SDL_Rect rect;
 } Sprite;
 
-extern Sprite *createSprite0(Sprite *sprite, int frames);
-extern Sprite *createSpriteFromFile(char *filename, int frames);
-extern Sprite *createSpriteFromTexture(SDL_Texture *texture, int frames);
-extern void killSprite(Sprite *sprite);
-extern void renderSprite(Sprite *sprite);
+Sprite *createSprite0(Sprite *sprite, int frames);
+Sprite *createSpriteFromFile(char *filename, int frames);
+Sprite *createSpriteFromTexture(SDL_Texture *texture, int frames);
+void killSprite(Sprite *sprite);
+void renderSprite(Sprite *sprite);
+SDL_bool isIntersectingSprite(Sprite *sprite1, Sprite *sprite2);
 
 #endif
 

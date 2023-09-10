@@ -89,4 +89,13 @@ void renderSprite(Sprite *sprite)
     }
 }
 
+/**
+ * @brief Is sprite 1 intersecting with sprite 2?
+ */
+SDL_bool isIntersectingSprite(Sprite *sprite1, Sprite *sprite2)
+{
+    SDL_Rect result;
+    return SDL_IntersectRect(&sprite1->rect, &sprite2->rect, &result);
+}
+
 // EOF

@@ -31,8 +31,8 @@
 #define  ALIEN_SQUIGGLY_SHOT  2
 
 #define ALIEN_IS_DEAD 0
-#define ALIEN_IS_EXPLODING 1
 #define ALIEN_IS_ALIVE 1
+#define ALIEN_IS_EXPLODING 2
 
 extern Sprite *alien1;
 extern Sprite *alien2;
@@ -43,8 +43,9 @@ extern SDL_bool aliensVisible;
 typedef struct
 {
     Sprite *sprite;
-    int type; // 1..3
-    int state;
+    uint8_t type; // 1..3
+    uint8_t state;
+    uint32_t explosionTicks;
 } Alien;
 
 extern Alien aliens[ALIEN_LINES][ALIEN_COLUMNS];
@@ -53,7 +54,8 @@ extern SDL_bool aliensVisible;
 void initAliens(void);
 void resetAliens(void);
 void moveAliens(void);
-void renderAliens(void);
+void renderAliens(uint32_t ticks);
+SDL_bool shootAtAliens(uint32_t ticks);
 
 #endif
 
