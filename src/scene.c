@@ -122,17 +122,17 @@ void renderScene(void)
     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
     // Fill borders
-    SDL_SetRenderDrawColor(renderer, 0xff, 0x00, 0xff, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderDrawColor(renderer, 0x80, 0x80, 0x80, SDL_ALPHA_OPAQUE);
     SDL_Rect top = {0, 0, windowWidth, offsetY - 1};
     SDL_RenderFillRect(renderer, &top);
-    SDL_SetRenderDrawColor(renderer, 0xff, 0x00, 0x00, SDL_ALPHA_OPAQUE);
+    // SDL_SetRenderDrawColor(renderer, 0xff, 0x00, 0x00, SDL_ALPHA_OPAQUE);
     SDL_Rect bottom = {0, windowHeight - offsetY, windowWidth, offsetY};
     SDL_RenderFillRect(renderer, &bottom);
-    SDL_SetRenderDrawColor(renderer, 0x00, 0xff, 0x00, SDL_ALPHA_OPAQUE);
-    SDL_Rect left = {0, offsetY - 1, offsetX - 1, windowHeight - 2 * offsetY};
+    // SDL_SetRenderDrawColor(renderer, 0x00, 0xff, 0x00, SDL_ALPHA_OPAQUE);
+    SDL_Rect left = {0, offsetY - 1, offsetX - 1, windowHeight - 1 * offsetY};
     SDL_RenderFillRect(renderer, &left);
-    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, SDL_ALPHA_OPAQUE);
-    SDL_Rect right = {windowWidth - offsetX, offsetY - 1, offsetX - 1, windowHeight - 2 * offsetY};
+    // SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, SDL_ALPHA_OPAQUE);
+    SDL_Rect right = {windowWidth - offsetX, offsetY - 1, offsetX, windowHeight - 1 * offsetY};
     SDL_RenderFillRect(renderer, &right);
     // Render "always here" items, except in BOOT scene
     if (scene != SCENE_BOOT)
@@ -300,7 +300,7 @@ void renderSceneGame(uint32_t ticks)
     // Check if saucer touched by shoot
     if (saucerVisible &&
         shootVisible &&
-        isIntersectingSprite(&shoot->rect, &saucer->rect)
+        isIntersectingSprite(shoot, saucer)
         /*shoot->rect.y <= SAUCER_Y + SAUCER_HEIGHT &&
         shoot->rect.x >= saucer->rect.x &&
         shoot->rect.x <= saucer->rect.x + SAUCER_WIDTH*/

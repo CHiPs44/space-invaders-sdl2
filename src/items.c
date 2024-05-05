@@ -46,7 +46,7 @@ void renderLives(void)
     for (uint8_t i = 0; i < lives - 1; i += 1)
     {
         SDL_Rect rect = {offsetX + (26 + i * 16) * zoom, offsetY + 30 * 8 * zoom,
-                         SHIP_WIDTH * zoom, SHIP_HEIGHT * zoom};
+                         /*SHIP_WIDTH*/ 16 * zoom, SHIP_HEIGHT * zoom};
         SDL_RenderCopy(renderer, ship->texture, NULL, &rect);
     }
 }

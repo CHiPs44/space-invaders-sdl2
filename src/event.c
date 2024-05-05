@@ -23,6 +23,7 @@ SDL_bool manageEvent(void)
         stop = SDL_TRUE;
         break;
     case SDL_KEYDOWN:
+        // fprintf(stderr, "SDL_KEYDOWN: sym=%d, scancode=%d\n", event.key.keysym.sym, event.key.keysym.scancode);
         switch (event.key.keysym.sym)
         {
         case SDLK_ESCAPE:

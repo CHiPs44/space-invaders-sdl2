@@ -186,7 +186,7 @@ SDL_bool shootAtAliens(uint32_t ticks)
             Alien *alien = &aliens[line][column];
             if (alien->state != ALIEN_IS_DEAD)
             {
-                if (isIntersectingSprite(&shoot->rect, &alien->sprite->rect))
+                if (isIntersectingSprite(shoot, alien->sprite))
                 {
                     alien->state = ALIEN_IS_EXPLODING;
                     alien->explosionTicks = ticks + 500L;
